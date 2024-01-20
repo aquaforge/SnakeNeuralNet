@@ -1,3 +1,4 @@
+from random import randint
 import numpy as np
 import datetime
 from Color import Color, COLOR_EMPTY, COLOR_WALL, COLOR_FOOD
@@ -105,6 +106,15 @@ class Field:
         if len(deletedSnakes) > 0:
             self._snakes -= deletedSnakes
             changed = True
+
+        if (len(self._food)<self._maxFood):
+            changed = True
+            while (len(self._food)<self._maxFood):
+                x=randint(1,self._height-1)
+                y=randint(1,self._width-1)
+                if self._matrixField[x,y] ==PointType.EMPTY:
+                    self._matrixField[x,y]=PointType.FOOD
+                    self._food.add(Point2D(x,y))
 
         if changed:
             self.getMatrixColor(True)

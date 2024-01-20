@@ -2,6 +2,8 @@ import pygame as pg
 from random import randint
 from threading import Thread
 from Enums.Direction import Direction
+from Enums.MoveDirection import MoveDirection
+
 from Enums.Point2D import Point2D
 from SimpleNN import SimpleNN
 from DrawScene import DrawScene
@@ -12,8 +14,8 @@ from Snake import Snake
 # pip freeze > requirements.txt
 # pip install -r requirements.txt
 
-FIELD_WIDTH = 110
-FIELD_HEIGHT = 85
+FIELD_WIDTH = 128
+FIELD_HEIGHT = 97
 
 SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 900
@@ -70,13 +72,19 @@ def main():
     clock = pg.time.Clock()
 
     snakes = set()
-    for i in range(25):
-        snakes.add(Snake([Point2D(30, 30+i*2), Point2D(31, 30+i*2), Point2D(32, 30+i*2), Point2D(33, 30+i*2), Point2D(34, 30+i*2), Point2D(35, 30+i*2), Point2D(36, 30+i*2)],
-                   Direction.UP, Color(randint(100, 200), randint(100, 200), randint(100, 200)), 100.0))
+    for i in range(60):
+        model = SimpleNN(1+2*3*3)
+        model.add(10, activation="relu", use_bias=True)
+        model.add(len(MoveDirection)+1, activation="relu", use_bias=False)
+        model.add(len(MoveDirection), activation="softmax")
+
+        body = [Point2D(30+k, 5+i*2) for k in range(10)]
+        snakes.add(Snake(body, model,
+                   Direction.UP, Color.random(100, 200), 100.0))
 
     food = set()
-    for i in range(25):
-        food.add(Point2D(10, 30+i*2))
+    for i in range(60):
+        food.add(Point2D(10, 5+i*2))
 
     field = Field(FIELD_WIDTH, FIELD_HEIGHT, snakes, food, 100)
     drawScene = DrawScene(sc, field, SCREEN_BLOCK_SIZE,

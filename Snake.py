@@ -9,16 +9,17 @@ from collections import deque
 from Enums.PointType import PointType
 
 
-HEALTH_STEP = 0.1
+HEALTH_STEP = 0.01
 HEALTH_TAIL = 20.0
 TAIL_MIN_LENTH = 2
 
 
 class Snake:
-    def __init__(self, body: list, headViewDirection: Direction, color: Color,  health: float = 100.0):
+    def __init__(self, body: list, brain: SimpleNN, headViewDirection: Direction, color: Color,  health: float = 100.0):
         self._body = body
         self._headViewDirection = headViewDirection
         self._color = color
+        self._brain = brain
 
         if health > 100.0:
             self._health = 100.0
@@ -82,6 +83,8 @@ class Snake:
 
         # TODO
         return self._changed
+
+
 '''
     def move(self, direction: MoveDirection):
         if (not self._alive or direction == MoveDirection.NONE):

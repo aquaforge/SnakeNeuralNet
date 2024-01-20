@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-
+from random import randint
 
 @dataclass
 class Color:
@@ -9,6 +9,10 @@ class Color:
 
     @property
     def toTuple(self): return (self.r, self.g, self.b)
+
+    @staticmethod
+    def random(a: int, b :int):
+        return Color(randint(a, b), randint(a, b), randint(a, b))
 
     def adjustColor(self, pos: int, size: int, isEndWhite: bool = True):
         end = 255 if isEndWhite else 0

@@ -82,7 +82,7 @@ class Snake:
 
         # TODO
         return self._changed
-
+'''
     def move(self, direction: MoveDirection):
         if (not self._alive or direction == MoveDirection.NONE):
             return
@@ -102,3 +102,4 @@ class Snake:
         self._map.point(new_head).type = new_head_type
         self._direc = self._direc_next
         self._steps += 1
+'''

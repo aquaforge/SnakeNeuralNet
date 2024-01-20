@@ -20,7 +20,6 @@ class Field:
         self._prepareMatrixField()
         self.getMatrixColor()
 
-
     @property
     def age(self): return self._age
 
@@ -50,10 +49,10 @@ class Field:
     def matrixColor(self) -> np.array: return self._matrixColor
 
     @property
-    def need_redraw(self):         return self._need_redraw
+    def need_redraw(self): return self._need_redraw
 
     def setRedrawed(self):
-        self._need_redraw = False     
+        self._need_redraw = False
 
     def _prepareMatrixField(self):
         self._matrixField = np.full(
@@ -92,7 +91,7 @@ class Field:
                         self._matrixColor[snake.body[i].x, snake.body[i].y] = snake.color.adjustColor(
                             i, snake.len)
             self._need_redraw = False
-        print ('567')    
+        print('567')
         return self._matrixColor
 
     def do_one_step(self):

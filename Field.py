@@ -18,7 +18,7 @@ class Field:
         self._food = food
         self._maxFood = maxFood
         self._prepareMatrixField()
-        self.getMatrixColor()
+        self.getMatrixColor(True)
 
     @property
     def age(self): return self._age
@@ -73,8 +73,8 @@ class Field:
                         self._matrixField[snake.body[i].x,
                                           snake.body[i].y] = PointType.SNAKE
 
-    def getMatrixColor(self) -> np.array:
-        if self._need_redraw:
+    def getMatrixColor(self, changed : bool) -> np.array:
+        if changed:
             self._matrixColor = np.full(
                 (self._height, self._width), COLOR_EMPTY)
             self._matrixColor[0] = [COLOR_WALL]*self._matrixColor.shape[1]
@@ -90,21 +90,21 @@ class Field:
                     for i in range(snake.len):
                         self._matrixColor[snake.body[i].x, snake.body[i].y] = snake.color.adjustColor(
                             i, snake.len)
-            self._need_redraw = False
-        print('567')
+            self._need_redraw = True
+        # print('567')
         return self._matrixColor
 
     def do_one_step(self):
         self._age += 1
-        self._need_redraw = False
+        changed = False
         for snake in self._snakes:
             if snake.doOneStep(self._matrixField):
-                self._need_redraw = True
+                changed = True
 
         deletedSnakes = set(snake for snake in self._snakes if not snake.alive)
         if len(deletedSnakes) > 0:
             self._snakes -= deletedSnakes
-            self._need_redraw = True
+            changed = True
 
-        if self._need_redraw:
-            self.getMatrixColor()
+        if changed:
+            self.getMatrixColor(True)

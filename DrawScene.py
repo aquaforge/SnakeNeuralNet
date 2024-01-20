@@ -1,5 +1,5 @@
 import pygame as pg
-import Color
+from Color import COLOR_EMPTY
 from Field import Field
 
 
@@ -30,12 +30,12 @@ class DrawScene():
     def draw(self):
         self._prepare_surf()
         if self._need_redraw:
-            self._sc.fill((200, 200, 200))
+            self._sc.fill(COLOR_EMPTY.toTuple)
             if self._surf is not None:
                 self._sc.blit(self._surf, (self._left, self._top))
             pg.display.update()
             self._need_redraw = False
-            print("sc_redraw")
+            #print("sc_redraw")
 
         pg.display.set_caption(f"Field={self._field.width}x{self._field.height} Snakes={
                                self._field.snakeCount} Food={self._field.foodCount} Age={self._field.age}")
@@ -71,16 +71,18 @@ class DrawScene():
 
         if changed or self._field.need_redraw:
             self._surf.fill((125, 125, 125))
-            matrix = self._field.getMatrixColor()
+            matrix = self._field.getMatrixColor(False)
 
             for h in range(self._field.height):
                 for w in range(self._field.width):
-                    pg.draw.rect(self._surf, (matrix[h, w].r, matrix[h, w].g, matrix[h, w].b), (
+                    pg.draw.rect(self._surf, matrix[h, w].toTuple, (
                         self._marginOuter + w *
                         (self._blockSize + self._marginInner),
                         self._marginOuter + h *
                         (self._blockSize + self._marginInner),
                         self._blockSize,
                         self._blockSize))
+
             self._field.setRedrawed()
             self._need_redraw = True
+            #print('fff')

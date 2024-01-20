@@ -58,6 +58,7 @@ def calculations(field: Field):
     global running
     while running and field.snakeCount > 0:
         field.do_one_step()
+    field.getMatrixColor(True)
 
 
 def main():
@@ -69,13 +70,13 @@ def main():
     clock = pg.time.Clock()
 
     snakes = set()
-    for i in range(1):
-        snakes.add(Snake([Point2D(30, 30+i*2), Point2D(31, 30+i*2), Point2D(32, 30+i*2), Point2D(33, 30+i*2), Point2D(34, 30+i*2)],
+    for i in range(25):
+        snakes.add(Snake([Point2D(30, 30+i*2), Point2D(31, 30+i*2), Point2D(32, 30+i*2), Point2D(33, 30+i*2), Point2D(34, 30+i*2), Point2D(35, 30+i*2), Point2D(36, 30+i*2)],
                    Direction.UP, Color(randint(100, 200), randint(100, 200), randint(100, 200)), 100.0))
 
     food = set()
-    for i in range(10):
-        food.add(Point2D(10, 5+i*5))
+    for i in range(25):
+        food.add(Point2D(10, 30+i*2))
 
     field = Field(FIELD_WIDTH, FIELD_HEIGHT, snakes, food, 100)
     drawScene = DrawScene(sc, field, SCREEN_BLOCK_SIZE,

@@ -9,7 +9,7 @@ from collections import deque
 from Enums.PointType import PointType
 
 
-HEALTH_STEP = 0.001
+HEALTH_STEP = 0.1
 HEALTH_TAIL = 20.0
 TAIL_MIN_LENTH = 2
 

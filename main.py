@@ -85,9 +85,9 @@ def main():
     snakes = set()
     for i in range(120):
 
-        model = SimpleNN(1+2*3*3)
+        model = SimpleNN(2+5*4) # здоровье+длина + массив 5х4 для взгляда заятно\пусто\еда
         model.add(10, activation="relu", use_bias=True)
-        model.add(len(MoveDirection)+1, activation="relu", use_bias=False)
+        # model.add(len(MoveDirection)+1, activation="relu", use_bias=False)
         model.add(len(MoveDirection), activation="softmax")
 
         body = [Point2D((30 if i < 61 else 50)+k, 5 +

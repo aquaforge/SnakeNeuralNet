@@ -82,8 +82,27 @@ class Snake:
                 return self._changed
 
         # TODO np.rot90(a, k=2)
-            
-            
+        head = self.head
+        view = np.full((4, 5), 0.0)
+
+        v = np.hstack(
+            (np.array([self._health/100, self.len/16]), view.flatten()))
+        input_vector = v.reshape(1, v.size)
+        print(input_vector)
+
+        output_vector = self._brain.predict(input_vector, verbose=0)
+        action = MoveDirection(output_vector.argmax())
+
+        if action ==  MoveDirection.STAY:
+            return
+        elif action == MoveDirection.FORWARD:
+            return
+        elif action == MoveDirection.LEFT:
+            return
+        elif action == MoveDirection.RIGHT:
+            return
+
+
         return self._changed
 
 

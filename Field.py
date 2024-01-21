@@ -74,7 +74,7 @@ class Field:
                         self._matrixField[snake.body[i].x,
                                           snake.body[i].y] = PointType.SNAKE
 
-    def getMatrixColor(self, changed : bool) -> np.array:
+    def getMatrixColor(self, changed: bool) -> np.array:
         if changed:
             self._matrixColor = np.full(
                 (self._height, self._width), COLOR_EMPTY)
@@ -90,7 +90,7 @@ class Field:
                 if snake.alive and snake.len > 0:
                     for i in range(snake.len):
                         self._matrixColor[snake.body[i].x, snake.body[i].y] = snake.color.adjustColor(
-                            i, snake.len)
+                            i, snake.len) if i > 0 else snake.color.dark2()
             self._need_redraw = True
         # print('567')
         return self._matrixColor
@@ -107,14 +107,14 @@ class Field:
             self._snakes -= deletedSnakes
             changed = True
 
-        if (len(self._food)<self._maxFood):
+        if (len(self._food) < self._maxFood):
             changed = True
-            while (len(self._food)<self._maxFood):
-                x=randint(1,self._height-1)
-                y=randint(1,self._width-1)
-                if self._matrixField[x,y] ==PointType.EMPTY:
-                    self._matrixField[x,y]=PointType.FOOD
-                    self._food.add(Point2D(x,y))
+            while (len(self._food) < self._maxFood):
+                x = randint(1, self._height-1)
+                y = randint(1, self._width-1)
+                if self._matrixField[x, y] == PointType.EMPTY:
+                    self._matrixField[x, y] = PointType.FOOD
+                    self._food.add(Point2D(x, y))
 
         if changed:
             self.getMatrixColor(True)

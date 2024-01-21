@@ -9,7 +9,7 @@ from collections import deque
 from Enums.PointType import PointType
 
 
-HEALTH_STEP = 0.01
+HEALTH_STEP = 0.5
 HEALTH_TAIL = 20.0
 TAIL_MIN_LENTH = 2
 
@@ -81,7 +81,9 @@ class Snake:
                 self._alive = False
                 return self._changed
 
-        # TODO
+        # TODO np.rot90(a, k=2)
+            
+            
         return self._changed
 
 

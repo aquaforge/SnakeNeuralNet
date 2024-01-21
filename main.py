@@ -1,3 +1,6 @@
+from datetime import datetime
+import json
+import time
 import pygame as pg
 from random import randint
 from threading import Thread
@@ -23,6 +26,9 @@ SCREEN_FPS = 60
 SCREEN_BLOCK_SIZE = 8
 SCREEN_BLOCK_MARGIN = 1
 SCREEN_BORDER_MARGIN = 5
+
+STEP_DELAY = 0.05
+
 
 running: bool = True
 
@@ -59,7 +65,12 @@ def handle_events(drawScene: DrawScene):
 def calculations(field: Field):
     global running
     while running and field.snakeCount > 0:
+        start = datetime.now()
         field.do_one_step()
+        end = datetime.now()
+        d = STEP_DELAY-(end - start).total_seconds()
+        if d > 0:
+            time.sleep(STEP_DELAY)
     field.getMatrixColor(True)
 
 
@@ -72,13 +83,15 @@ def main():
     clock = pg.time.Clock()
 
     snakes = set()
-    for i in range(60):
+    for i in range(120):
+
         model = SimpleNN(1+2*3*3)
         model.add(10, activation="relu", use_bias=True)
         model.add(len(MoveDirection)+1, activation="relu", use_bias=False)
         model.add(len(MoveDirection), activation="softmax")
 
-        body = [Point2D(30+k, 5+i*2) for k in range(10)]
+        body = [Point2D((30 if i < 61 else 50)+k, 5 +
+                        (i if i < 61 else i-61)*2) for k in range(10)]
         snakes.add(Snake(body, model,
                    Direction.UP, Color.random(100, 200), 100.0))
 
@@ -86,7 +99,7 @@ def main():
     for i in range(60):
         food.add(Point2D(10, 5+i*2))
 
-    field = Field(FIELD_WIDTH, FIELD_HEIGHT, snakes, food, 100)
+    field = Field(FIELD_WIDTH, FIELD_HEIGHT, snakes, food, 250)
     drawScene = DrawScene(sc, field, SCREEN_BLOCK_SIZE,
                           SCREEN_BLOCK_MARGIN, SCREEN_BORDER_MARGIN)
 

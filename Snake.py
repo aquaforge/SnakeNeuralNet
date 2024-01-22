@@ -9,7 +9,7 @@ from collections import deque
 from Enums.PointType import PointType
 
 
-HEALTH_STEP = 0.5
+HEALTH_STEP = 1.0
 HEALTH_TAIL = 20.0
 TAIL_MIN_LENTH = 2
 SNAKE_VIEW_RADIUS = 2
@@ -84,12 +84,33 @@ class Snake:
             else:
                 return self.die(matrixField)
 
-        head = self.head
         view = np.full((2*SNAKE_VIEW_RADIUS+1, 2*SNAKE_VIEW_RADIUS+1), 0.0)
+        head_in_view = Point2D(SNAKE_VIEW_RADIUS, SNAKE_VIEW_RADIUS)
+        head = self.head
+        for i in range(view.shape[0]):
+            for j in range(view.shape[1]):
+                h = 0
+                w = 0
+                if self._headView == Direction.UP:
+                    h = head.h-(i-head_in_view.h)
+                    w = head.w-(j-head_in_view.w)
+                elif self._headView == Direction.DOWN:
+                    h = head.h+(i-head_in_view.h)
+                    w = head.w+(j-head_in_view.w)
+                elif self._headView == Direction.LEFT:
+                    h = head.h-(j-head_in_view.w)
+                    w = head.w-(i-head_in_view.h)
+                elif self._headView == Direction.RIGHT:
+                    h = head.h+(j-head_in_view.w)
+                    w = head.w+(i-head_in_view.h)
 
-        for bf in range(-2*SNAKE_VIEW_RADIUS, 2*SNAKE_VIEW_RADIUS):  # back and forth
-            for lr in range(-2*SNAKE_VIEW_RADIUS, 2*SNAKE_VIEW_RADIUS):  # left-right
-                pass         # TODO np.rot90(a, k=2)
+
+                pointType = self._getMatrixPointType(
+                    Point2D(h, w), matrixField)
+                if pointType == PointType.SNAKE or pointType == PointType.WALL:
+                    view[i, j] = -1.0
+                elif pointType == PointType.FOOD:
+                    view[i, j] = 1.0
 
         input_vector = np.hstack(
             (np.array([self._health/100, self.len/16]), view.flatten()))

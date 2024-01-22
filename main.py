@@ -17,17 +17,17 @@ from Snake import Snake, SNAKE_VIEW_RADIUS
 # pip freeze > requirements.txt
 # pip install -r requirements.txt
 
-FIELD_WIDTH = 128
-FIELD_HEIGHT = 97
+FIELD_WIDTH = 130
+FIELD_HEIGHT = 70
 
 SCREEN_WIDTH = 1600
 SCREEN_HEIGHT = 900
 SCREEN_FPS = 60
-SCREEN_BLOCK_SIZE = 8
+SCREEN_BLOCK_SIZE = 10
 SCREEN_BLOCK_MARGIN = 1
 SCREEN_BORDER_MARGIN = 5
 
-STEP_DELAY = 0.01
+STEP_DELAY = 0.05
 
 running: bool = True
 
@@ -85,10 +85,10 @@ def main():
     food = set()
 
     h = 5
-    while h+15 < FIELD_HEIGHT:
+    while h+8 < FIELD_HEIGHT:
         w = 5
-        while w+10 < FIELD_WIDTH:
-            food.add(Point2D(h, w))
+        while w+5 < FIELD_WIDTH:
+            #food.add(Point2D(h, w))
 
             # здоровье+длина + массив (2*SNAKE_VIEW_RADIUS+1)^2 для взгляда заятно\пусто\еда
             model = SimpleNN(2+(2*SNAKE_VIEW_RADIUS+1)**2)
@@ -96,13 +96,14 @@ def main():
             # model.add(len(MoveDirection)+1, activation="relu", use_bias=False)
             model.add(len(MoveDirection), activation="softmax")
 
-            body = [Point2D(h+2+k, w) for k in range(10)]
-            snakes.add(Snake(body, model, Direction.UP,
+            body = [Point2D(h+2+k, w) for k in range(5)]
+            snakes.add(Snake(body, model, Direction.LEFT,
                        Color.random(100, 200), 100.0))
             w += 3
         h += 20
 
-    field = Field(FIELD_WIDTH, FIELD_HEIGHT, snakes, food, 250)
+    field = Field(FIELD_WIDTH, FIELD_HEIGHT, snakes,
+                  food, 0.05 * FIELD_WIDTH * FIELD_HEIGHT)
     drawScene = DrawScene(sc, field, SCREEN_BLOCK_SIZE,
                           SCREEN_BLOCK_MARGIN, SCREEN_BORDER_MARGIN)
 
@@ -114,6 +115,9 @@ def main():
         clock.tick(SCREEN_FPS)
         running = handle_events(drawScene)
         drawScene.draw()
+        if field.snakeCount==0:
+            running=False
+
     pg.quit()
 
 

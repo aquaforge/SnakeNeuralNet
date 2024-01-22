@@ -12,7 +12,7 @@ from SimpleNN import SimpleNN
 from DrawScene import DrawScene
 from Color import Color
 from Field import Field
-from Snake import Snake
+from Snake import Snake, SNAKE_VIEW_RADIUS
 
 # pip freeze > requirements.txt
 # pip install -r requirements.txt
@@ -20,15 +20,14 @@ from Snake import Snake
 FIELD_WIDTH = 128
 FIELD_HEIGHT = 97
 
-SCREEN_WIDTH = 1200
+SCREEN_WIDTH = 1600
 SCREEN_HEIGHT = 900
 SCREEN_FPS = 60
 SCREEN_BLOCK_SIZE = 8
 SCREEN_BLOCK_MARGIN = 1
 SCREEN_BORDER_MARGIN = 5
 
-STEP_DELAY = 0.05
-
+STEP_DELAY = 0.01
 
 running: bool = True
 
@@ -83,21 +82,25 @@ def main():
     clock = pg.time.Clock()
 
     snakes = set()
-    for i in range(120):
-
-        model = SimpleNN(2+5*4) # здоровье+длина + массив 5х4 для взгляда заятно\пусто\еда
-        model.add(10, activation="relu", use_bias=True)
-        # model.add(len(MoveDirection)+1, activation="relu", use_bias=False)
-        model.add(len(MoveDirection), activation="softmax")
-
-        body = [Point2D((30 if i < 61 else 50)+k, 5 +
-                        (i if i < 61 else i-61)*2) for k in range(10)]
-        snakes.add(Snake(body, model,
-                   Direction.UP, Color.random(100, 200), 100.0))
-
     food = set()
-    for i in range(60):
-        food.add(Point2D(10, 5+i*2))
+
+    h = 5
+    while h+15 < FIELD_HEIGHT:
+        w = 5
+        while w+10 < FIELD_WIDTH:
+            food.add(Point2D(h, w))
+
+            # здоровье+длина + массив (2*SNAKE_VIEW_RADIUS+1)^2 для взгляда заятно\пусто\еда
+            model = SimpleNN(2+(2*SNAKE_VIEW_RADIUS+1)**2)
+            model.add(10, activation="relu", use_bias=True)
+            # model.add(len(MoveDirection)+1, activation="relu", use_bias=False)
+            model.add(len(MoveDirection), activation="softmax")
+
+            body = [Point2D(h+2+k, w) for k in range(10)]
+            snakes.add(Snake(body, model, Direction.UP,
+                       Color.random(100, 200), 100.0))
+            w += 3
+        h += 20
 
     field = Field(FIELD_WIDTH, FIELD_HEIGHT, snakes, food, 250)
     drawScene = DrawScene(sc, field, SCREEN_BLOCK_SIZE,

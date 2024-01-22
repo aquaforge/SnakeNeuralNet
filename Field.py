@@ -8,7 +8,7 @@ from Snake import Snake
 
 
 class Field:
-    def __init__(self, width: int, height: int, snakes: map, food: map, maxFood: int):
+    def __init__(self, width: int, height: int, snakes: set, food: set, maxFood: int):
         self._width = width
         self._height = height
 
@@ -64,15 +64,15 @@ class Field:
         self._matrixField[:, -1] = self._matrixField[:, 0]
 
         for food in self._food:
-            self._matrixField[food.x, food.y] = PointType.FOOD
+            self._matrixField[food.h, food.w] = PointType.FOOD
 
         for snake in self._snakes:
             if snake.alive:
                 size = snake.len
                 if size > 0:
                     for i in range(size):
-                        self._matrixField[snake.body[i].x,
-                                          snake.body[i].y] = PointType.SNAKE
+                        self._matrixField[snake.body[i].h,
+                                          snake.body[i].w] = PointType.SNAKE
 
     def getMatrixColor(self, changed: bool) -> np.array:
         if changed:
@@ -84,12 +84,12 @@ class Field:
             self._matrixColor[:, -1] = self._matrixColor[:, 0]
 
             for food in self._food:
-                self._matrixColor[food.x, food.y] = COLOR_FOOD
+                self._matrixColor[food.h, food.w] = COLOR_FOOD
 
             for snake in self._snakes:
                 if snake.alive and snake.len > 0:
                     for i in range(snake.len):
-                        self._matrixColor[snake.body[i].x, snake.body[i].y] = snake.color.adjustColor(
+                        self._matrixColor[snake.body[i].h, snake.body[i].w] = snake.color.adjustColor(
                             i, snake.len) if i > 0 else snake.color.dark2()
             self._need_redraw = True
         # print('567')
@@ -99,7 +99,7 @@ class Field:
         self._age += 1
         changed = False
         for snake in self._snakes:
-            if snake.doOneStep(self._matrixField):
+            if snake.doOneStep(self._matrixField, self._food):
                 changed = True
 
         deletedSnakes = set(snake for snake in self._snakes if not snake.alive)

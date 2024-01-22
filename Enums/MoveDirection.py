@@ -2,8 +2,8 @@ from enum import Enum, unique
 
 @unique
 class MoveDirection(Enum):
-    NONE = 0
-    FORWARD = 1
-    RIGHT = 2
-    LEFT = 3
+    STAY = 0
+    LEFT = 1
+    FORWARD = 2
+    RIGHT = 3
 

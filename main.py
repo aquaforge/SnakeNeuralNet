@@ -16,8 +16,8 @@ from FieldScene import FieldScene
 # pip freeze > requirements.txt
 # pip install -r requirements.txt
 
-FIELD_WIDTH = 51
-FIELD_HEIGHT = 28
+FIELD_WIDTH = 70
+FIELD_HEIGHT = 40
 
 SNAKE_VIEW_RADIUS=2
 

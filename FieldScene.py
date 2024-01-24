@@ -7,7 +7,7 @@ from Snake import Snake
 
 
 class FieldScene(object):
-    CanvasBlockSize = 30
+    CanvasBlockSize = 15
     CanvasMargin = 1
 
     '''

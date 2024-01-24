@@ -58,8 +58,8 @@ class Snake:
     def len(self) -> int: return len(self._body)
 
     def die(self, food: set):
-        for p in self._body:
-            food.add(p)
+        #for p in self._body:
+        #    food.add(p)
         self._body = list()
         self._alive = False
 

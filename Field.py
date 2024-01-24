@@ -53,7 +53,7 @@ class Field:
     def setRedrawed(self):
         self._needRedraw = False
 
-    def doOneStepAll(self):
+    def doOneStep(self):
         self._needRedraw = True
         self._age += 1
 

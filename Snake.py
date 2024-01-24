@@ -14,10 +14,11 @@ HEALTH_STEP = 1.0
 HEALTH_TAIL = 20.0
 TAIL_MIN_LENTH = 2
 
+
 class Snake:
-    def __init__(self, body: list, viewRadius:int, brain: SimpleNN, headViewDirection: Direction, color: Color = Color.randomColor(100, 200),  health: float = 100.0):
+    def __init__(self, body: list, viewRadius: int, brain: SimpleNN, headViewDirection: Direction, color: Color = Color.randomColor(100, 200),  health: float = 100.0):
         self._body = body
-        self._viewRadius=viewRadius
+        self._viewRadius = viewRadius
         self._brain = brain
         self._headView = headViewDirection
         self._color = color
@@ -26,8 +27,8 @@ class Snake:
         self._alive = True
         self._age = 0
 
-        self.mapDirectionArrows = {Direction.UP: (-1, 0),   Direction.DOWN: (1, 0),
-                                   Direction.LEFT: (0, -1), Direction.RIGHT: (0, 1)}
+        self.mapDirectionArrows = {Direction.UP: (0, -1),   Direction.DOWN: (0, 1),
+                                   Direction.LEFT: (1, 0), Direction.RIGHT: (1, 0)}
 
     def pointIsInSnake(self, point: tuple) -> bool:
         return len([1 for p in self._body if p == point]) > 0
@@ -80,29 +81,19 @@ class Snake:
         head = self.head
         for x in range(view.shape[1]):
             for y in range(view.shape[0]):
-                pt = getPointType(
-                    head[0]-self._viewRadius+x, head[1]-self._viewRadius+y)
+                pt = getPointType((
+                    head[0]-self._viewRadius+x, head[1]-self._viewRadius+y))
                 view[y, x] = int(pt)
 
-        r = 0
-        if self._headView == Direction.LEFT:
-            r = 1
-        elif self._headView == Direction.DOWN:
-            r = 2
-        elif self._headView == Direction.RIGHT:
-            r = 3
-
-        if r != 0:
-            view = np.rot90(view, r)
+        if self._headView != Direction.UP:
+            view = np.rot90(view, int(self._headView))
 
         input_vector = view.flatten()
         input_vector = input_vector.reshape(1, input_vector.size)
 
         output_vector = self._brain.predict(input_vector, verbose=0)
         action = MoveDirection(output_vector.argmax())
-
         self._move(action, food, getPointType)
-        return self._changed
 
     def _move(self, action: MoveDirection, food: set, getPointType):
         if (not self._alive or self.len == 0 or action == MoveDirection.STAY):
@@ -117,11 +108,14 @@ class Snake:
 
         if i != 0:
             self._headView = Direction((int(self._headView)+i) % 4)
-        new_head = self.head + self.mapDirectionArrows[self._headView]
+
+        h = self.head
+        m = self.mapDirectionArrows[self._headView]
+        new_head = (h[0]+m[0], h[1]+m[1])
 
         pt = getPointType(new_head)
         if (pt == PointType.WALL or pt == PointType.SNAKE):
-            self.die()
+            self.die(food)
             return
         elif pt == PointType.FOOD:
             food.remove(new_head)

@@ -60,9 +60,9 @@ def handle_events(fieldScene: FieldScene):
 
 def calculations(field: Field, fieldScene: FieldScene):
     global running
-    while running and len(Snake.snakes) > 0:
+    while running and len(field.snakes) > 0:
         start = datetime.now()
-        field.do_one_step()
+        field.doOneStep()
         end = datetime.now()
         d = STEP_DELAY-(end - start).total_seconds()
         if d > 0:
@@ -97,8 +97,8 @@ def main():
     field.addFood()
     fieldScene = FieldScene(disp, field)
 
-    #th = Thread(name="calculation", target=calculations,                daemon=True, args=(field, fieldScene))
-    #th.start()
+    th = Thread(name="calculation", target=calculations,                daemon=True, args=(field, fieldScene))
+    th.start()
 
     while running:
         clock.tick(SCREEN_FPS)

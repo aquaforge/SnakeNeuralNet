@@ -7,3 +7,6 @@ class MoveDirection(Enum):
     FORWARD = 2
     RIGHT = 3
 
+    def __int__(self):
+        return self.value    
+

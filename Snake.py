@@ -1,40 +1,36 @@
 from random import randint
-from SimpleNN import SimpleNN
 import numpy as np
+from SimpleNN import SimpleNN
 from Color import Color
 from Enums.Direction import Direction
 from Enums.MoveDirection import MoveDirection
-from Enums.Point2D import Point2D
-from collections import deque
 from Enums.PointType import PointType
+# from Field import Field
+# from Food import Food
+# from collections import deque
 
 
 HEALTH_STEP = 1.0
 HEALTH_TAIL = 20.0
 TAIL_MIN_LENTH = 2
-SNAKE_VIEW_RADIUS = 2
-
 
 class Snake:
-    def __init__(self, body: list, brain: SimpleNN, headViewDirection: Direction, color: Color,  health: float = 100.0):
+    def __init__(self, body: list, viewRadius:int, brain: SimpleNN, headViewDirection: Direction, color: Color = Color.randomColor(100, 200),  health: float = 100.0):
         self._body = body
+        self._viewRadius=viewRadius
+        self._brain = brain
         self._headView = headViewDirection
         self._color = color
-        self._brain = brain
-
-        if health > 100.0:
-            self._health = 100.0
-        elif health < 0.0:
-            self._health = 100.0
-        else:
-            self._health = health
+        self._health = health if (0.0 <= health <= 100.0) else 100.0
 
         self._alive = True
         self._age = 0
-        self._changed = 0
 
-        self.mapDirectionArrows = {Direction.UP: Point2D(-1, 0),   Direction.DOWN: Point2D(1, 0),
-                                   Direction.LEFT: Point2D(0, -1), Direction.RIGHT: Point2D(0, 1)}
+        self.mapDirectionArrows = {Direction.UP: (-1, 0),   Direction.DOWN: (1, 0),
+                                   Direction.LEFT: (0, -1), Direction.RIGHT: (0, 1)}
+
+    def pointIsInSnake(self, point: tuple) -> bool:
+        return len([1 for p in self._body if p == point]) > 0
 
     @property
     def headViewDirection(self) -> Direction: return self._headView
@@ -55,79 +51,60 @@ class Snake:
     def body(self) -> list: return self._body
 
     @property
-    def head(self) -> Point2D: return self._body[0]
-
-    @property
-    def tail(self) -> Point2D: return self._body[-1]
+    def head(self) -> tuple: return self._body[0]
 
     @property
     def len(self) -> int: return len(self._body)
 
-    def die(self, matrixField: np.array) -> bool:
+    def die(self, food: set):
+        for p in self._body:
+            food.add(p)
+        self._body = list()
         self._alive = False
-        for i in range(len(self._body)):
-            self._removeTail(matrixField)
-        return self._changed
 
-    def _removeTail(self, matrixField: np.array):
-        matrixField[self._body[-1].h, self._body[-1].w] = PointType.EMPTY
+    def _removeTail(self):
         self._body.pop()
-        self._changed = True
 
-    def doOneStep(self, matrixField: np.array, food: set) -> bool:
-        self._changed = False
+    def doOneStep(self, food: set, getPointType):
         self._health -= HEALTH_STEP
         if self._health <= 0.0:
             if len(self._body) > TAIL_MIN_LENTH:
-                self._removeTail(matrixField)
+                self._removeTail()
                 self._health += HEALTH_TAIL
             else:
-                return self.die(matrixField)
+                return self.die(food)
 
-        view = np.full((2*SNAKE_VIEW_RADIUS+1, 2*SNAKE_VIEW_RADIUS+1), 0.0)
-        head_in_view = Point2D(SNAKE_VIEW_RADIUS, SNAKE_VIEW_RADIUS)
+        view = np.full((2*self._viewRadius+1, 2*self._viewRadius+1), 0.0)
+        # head_in_view = (SNAKE_VIEW_RADIUS, SNAKE_VIEW_RADIUS)
+
         head = self.head
-        for i in range(view.shape[0]):
-            for j in range(view.shape[1]):
-                h = 0
-                w = 0
-                if self._headView == Direction.UP:
-                    h = head.h-(i-head_in_view.h)
-                    w = head.w-(j-head_in_view.w)
-                elif self._headView == Direction.DOWN:
-                    h = head.h+(i-head_in_view.h)
-                    w = head.w+(j-head_in_view.w)
-                elif self._headView == Direction.LEFT:
-                    h = head.h-(j-head_in_view.w)
-                    w = head.w-(i-head_in_view.h)
-                elif self._headView == Direction.RIGHT:
-                    h = head.h+(j-head_in_view.w)
-                    w = head.w+(i-head_in_view.h)
+        for x in range(view.shape[1]):
+            for y in range(view.shape[0]):
+                pt = getPointType(
+                    head[0]-self._viewRadius+x, head[1]-self._viewRadius+y)
+                view[y, x] = int(pt)
 
+        r = 0
+        if self._headView == Direction.LEFT:
+            r = 1
+        elif self._headView == Direction.DOWN:
+            r = 2
+        elif self._headView == Direction.RIGHT:
+            r = 3
 
-                pointType = self._getMatrixPointType(
-                    Point2D(h, w), matrixField)
-                if pointType == PointType.SNAKE or pointType == PointType.WALL:
-                    view[i, j] = -1.0
-                elif pointType == PointType.FOOD:
-                    view[i, j] = 1.0
+        if r != 0:
+            view = np.rot90(view, r)
 
-        input_vector = np.hstack(
-            (np.array([self._health/100, self.len/16]), view.flatten()))
+        input_vector = view.flatten()
         input_vector = input_vector.reshape(1, input_vector.size)
 
         output_vector = self._brain.predict(input_vector, verbose=0)
         action = MoveDirection(output_vector.argmax())
 
-        self._move(action, matrixField, food)
+        self._move(action, food, getPointType)
         return self._changed
 
-    def _getMatrixPointType(self, p: Point2D, matrixField: np.array) -> PointType:
-        if p.h < 0 or p.w < 0 or p.h > matrixField.shape[0]-1 or p.w > matrixField.shape[1]-1:
-            return PointType.WALL
-        return matrixField[p.h, p.w]
-
-    def _move(self, action: MoveDirection, matrixField: np.array,  food: set):
+    def _move(self, action: MoveDirection, food: set, getPointType):
         if (not self._alive or self.len == 0 or action == MoveDirection.STAY):
             return True
 
@@ -138,26 +115,17 @@ class Snake:
         elif (action == MoveDirection.FORWARD):
             i = 0
 
-        if i == 0:
-            new_headView = self._headView
-        else:
-            # i = (int(self._headView)+i) % 4
-            new_headView = Direction((int(self._headView)+i) % 4)
+        if i != 0:
+            self._headView = Direction((int(self._headView)+i) % 4)
+        new_head = self.head + self.mapDirectionArrows[self._headView]
 
-        head = self.head
-        new_head = head + self.mapDirectionArrows[new_headView]
-
-        headPointType = self._getMatrixPointType(new_head, matrixField)
-        if (headPointType == PointType.WALL or headPointType == PointType.SNAKE):
-            self.die(matrixField)
-            return True
-        elif headPointType == PointType.FOOD:
+        pt = getPointType(new_head)
+        if (pt == PointType.WALL or pt == PointType.SNAKE):
+            self.die()
+            return
+        elif pt == PointType.FOOD:
             food.remove(new_head)
-        elif headPointType == PointType.EMPTY:
-            self._removeTail(matrixField)
+        elif pt == PointType.EMPTY:
+            self._removeTail()
 
         self._body = [new_head] + self._body
-        matrixField[new_head.h, new_head.w] = PointType.SNAKE
-
-        self._headView = new_headView
-        self._changed = True

@@ -9,24 +9,28 @@ class Color:
     b: int
 
     @property
-    def toTuple(self): return (self.r, self.g, self.b)
+    # convert to tuple(r,g,b)
+    def toTuple(self) -> tuple: return (self.r, self.g, self.b)
+
+    @property
+    # convert to "#RRGGBB"
+    def toHTMLColor(self) -> str: return "#%02x%02x%02x" % self.toTuple
 
     @staticmethod
-    def random(a: int, b: int):
-        return Color(randint(a, b), randint(a, b), randint(a, b))
+    def randomColor(lFrom: int, lTo: int):
+        c = [randint(lFrom, lTo) for i in range(3)]
+        return Color(c[0], c[1], c[2])
 
-    def adjustColor(self, pos: int, size: int, isEndWhite: bool = True):
-        end = 230 if isEndWhite else 0
-        r = self.r+(end-self.r)*pos/size/2
-        g = self.g+(end-self.g)*pos/size/2
-        b = self.b+(end-self.b)*pos/size/2
-        return Color(r, g, b)
+    def lighter(self, val: float):
+        c = [i+(230-i)*val/2 for i in self.toTuple]
+        return Color(c[0], c[1], c[2])
 
-    def dark2(self):
-        return Color(self.r*0.7, self.g*0.7, self.b*0.7)
+    def darker(self, val: float = 0.7):
+        return Color(int(self.r*val), int(self.g*val), int(self.b*val))
 
 
+COLOR_FOOD = Color(255, 0, 0)
 COLOR_EMPTY = Color(210, 210, 210)
 COLOR_WALL = Color(0, 0, 0)
-COLOR_FOOD = Color(255, 0, 0)
-COLOR_SNAKE_RANGE = (70, 200)
+
+COLOR_SNAKE_RANGE = (100, 200)

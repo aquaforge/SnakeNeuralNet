@@ -6,33 +6,31 @@ from random import randint
 from threading import Thread
 from Enums.Direction import Direction
 from Enums.MoveDirection import MoveDirection
-
-from Enums.Point2D import Point2D
+from Color import COLOR_SNAKE_RANGE, Color
 from SimpleNN import SimpleNN
-from DrawScene import DrawScene
-from Color import Color
+from Snake import Snake
 from Field import Field
-from Snake import Snake, SNAKE_VIEW_RADIUS
+#from Food import Food
+from FieldScene import FieldScene
 
 # pip freeze > requirements.txt
 # pip install -r requirements.txt
 
-FIELD_WIDTH = 130
-FIELD_HEIGHT = 70
+FIELD_WIDTH = 51
+FIELD_HEIGHT = 28
+
+SNAKE_VIEW_RADIUS=2
 
 SCREEN_WIDTH = 1600
 SCREEN_HEIGHT = 900
 SCREEN_FPS = 60
-SCREEN_BLOCK_SIZE = 10
-SCREEN_BLOCK_MARGIN = 1
-SCREEN_BORDER_MARGIN = 5
 
 STEP_DELAY = 0.05
 
 running: bool = True
 
 
-def handle_events(drawScene: DrawScene):
+def handle_events(fieldScene: FieldScene):
     for event in pg.event.get():
         if event.type == pg.QUIT:
             return False
@@ -41,8 +39,8 @@ def handle_events(drawScene: DrawScene):
             if event.key == pg.K_ESCAPE:
                 return False
             if event.key == pg.K_HOME:
-                drawScene.left = 0
-                drawScene.top = 0
+                fieldScene.left = 0
+                fieldScene.top = 0
 
         if event.type != pg.MOUSEMOTION:
             # print(f"{draw_scene.left} {draw_scene.top}")
@@ -50,73 +48,64 @@ def handle_events(drawScene: DrawScene):
 
     keys = pg.key.get_pressed()
     if keys[pg.K_LEFT]:
-        drawScene.left -= 1
+        fieldScene.left -= 1
     elif keys[pg.K_RIGHT]:
-        drawScene.left += 1
+        fieldScene.left += 1
     elif keys[pg.K_UP]:
-        drawScene.top -= 1
+        fieldScene.top -= 1
     elif keys[pg.K_DOWN]:
-        drawScene.top += 1
-
+        fieldScene.top += 1
     return True
 
 
-def calculations(field: Field):
+def calculations(field: Field, fieldScene: FieldScene):
     global running
-    while running and field.snakeCount > 0:
+    while running and len(Snake.snakes) > 0:
         start = datetime.now()
         field.do_one_step()
         end = datetime.now()
         d = STEP_DELAY-(end - start).total_seconds()
         if d > 0:
             time.sleep(STEP_DELAY)
-    field.getMatrixColor(True)
+    fieldScene.drawAll()
 
 
 def main():
     global running
 
     pg.init()
-    sc = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    pg.display.set_caption(f"Field: {SCREEN_WIDTH}x{SCREEN_HEIGHT}")
+    disp = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pg.time.Clock()
 
-    snakes = set()
-    food = set()
+    field = Field(FIELD_WIDTH, FIELD_HEIGHT)
 
-    h = 5
-    while h+8 < FIELD_HEIGHT:
-        w = 5
-        while w+5 < FIELD_WIDTH:
-            #food.add(Point2D(h, w))
-
+    h = 2
+    while h+7 < FIELD_HEIGHT:
+        w = 2
+        while w+3 < FIELD_WIDTH:
             # здоровье+длина + массив (2*SNAKE_VIEW_RADIUS+1)^2 для взгляда заятно\пусто\еда
-            model = SimpleNN(2+(2*SNAKE_VIEW_RADIUS+1)**2)
+            model = SimpleNN((2*SNAKE_VIEW_RADIUS+1)**2)
             model.add(10, activation="relu", use_bias=True)
             # model.add(len(MoveDirection)+1, activation="relu", use_bias=False)
             model.add(len(MoveDirection), activation="softmax")
 
-            body = [Point2D(h+2+k, w) for k in range(5)]
-            snakes.add(Snake(body, model, Direction.LEFT,
-                       Color.random(100, 200), 100.0))
+            field.snakes.add(Snake([(w, h+k) for k in range(5)], SNAKE_VIEW_RADIUS, model, Direction.LEFT,
+                  Color.randomColor(COLOR_SNAKE_RANGE[0], COLOR_SNAKE_RANGE[1])))
             w += 3
-        h += 20
+        h += 7
 
-    field = Field(FIELD_WIDTH, FIELD_HEIGHT, snakes,
-                  food, 0.05 * FIELD_WIDTH * FIELD_HEIGHT)
-    drawScene = DrawScene(sc, field, SCREEN_BLOCK_SIZE,
-                          SCREEN_BLOCK_MARGIN, SCREEN_BORDER_MARGIN)
+    field.addFood()
+    fieldScene = FieldScene(disp, field)
 
-    th = Thread(name="calculation", target=calculations,
-                daemon=True, args=(field,))
-    th.start()
+    #th = Thread(name="calculation", target=calculations,                daemon=True, args=(field, fieldScene))
+    #th.start()
 
     while running:
         clock.tick(SCREEN_FPS)
-        running = handle_events(drawScene)
-        drawScene.draw()
-        if field.snakeCount==0:
-            running=False
+        running = handle_events(fieldScene)
+        fieldScene.drawAll()
+        if len(field.snakes) == 0:
+            running = False
 
     pg.quit()
 

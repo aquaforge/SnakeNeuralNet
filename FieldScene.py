@@ -1,92 +1,54 @@
-import pygame as pg
+from tkinter import NW, Tk, Canvas
+from PIL import Image, ImageDraw, ImageTk
 from Color import COLOR_FOOD, Color, COLOR_EMPTY
 
 from Field import Field
-#from Food import Food
+# from Food import Food
 from Snake import Snake
 
 
 class FieldScene(object):
-    CanvasBlockSize = 15
-    CanvasMargin = 1
-
-    '''
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(FieldScene, cls).__new__(cls)
-        return cls.instance
-    '''
-
-    def __init__(self, disp: pg.display, field: Field):
-        self._disp = disp
+    def __init__(self, field: Field, canvasBlockSize: int, root: Tk, canvasField: Canvas):
         self._field = field
+        self._canvasBlockSize = canvasBlockSize
 
-        self._left = 5
-        self._top = 5
-        self._surf = None
+        self._root = root
+        self._canvasField = canvasField
+
+        self._imgPILField = Image.new(mode="RGB", size=(
+            self._field.width * self._canvasBlockSize, self._field.height * self._canvasBlockSize), color=COLOR_EMPTY.toTuple)
+        self._drawPILField = ImageDraw.Draw(self._imgPILField)
+
         self._needRedraw = True
-
-        self._draw_size = (
-            2 * FieldScene.CanvasMargin - FieldScene.CanvasMargin + field.width * (
-                FieldScene.CanvasBlockSize + FieldScene.CanvasMargin),
-            2 * FieldScene.CanvasMargin - FieldScene.CanvasMargin + field.height * (
-                FieldScene.CanvasBlockSize + FieldScene.CanvasMargin)
-        )
         self.setCaption()
 
-    @property
-    def left(self):
-        return self._left
-
-    @property
-    def top(self):
-        return self._top
-
-    @left.setter
-    def left(self, left: int):
-        if self._left != left:
-            self._needRedraw = True
-            self._left = left
-
-    @top.setter
-    def top(self, top: int):
-        if self._top != top:
-            self._needRedraw = True
-            self._top = top
-
-    def _pointToScreenCoord(self, p) -> list:
-        return [p[0]*FieldScene.CanvasBlockSize, p[1]*FieldScene.CanvasBlockSize, (p[0]+1)*FieldScene.CanvasBlockSize, (p[1]+1)*FieldScene.CanvasBlockSize]
+    def _pointToScreenRect(self, p) -> list:
+        return (p[0]*self._canvasBlockSize, p[1]*self._canvasBlockSize,
+                (p[0]+1)*self._canvasBlockSize, (p[1]+1)*self._canvasBlockSize)
 
     def drawAll(self):
         self._prepareSurf()
         if self._needRedraw:
-            self._disp.fill(COLOR_EMPTY.darker().toTuple)
-            self._disp.blit(self._surf, (self._left, self._top))
-            pg.display.update()
+            self._canvasField.create_image(
+                0, 0, anchor=NW, image=ImageTk.PhotoImage(self._imgPILField))
             self._needRedraw = False
         self.setCaption()
 
     def setCaption(self):
-        pg.display.set_caption(f"Field={self._field.width}x{self._field.height} Snakes={
+        self._root.title(f"Field={self._field.width}x{self._field.height} Snakes={
             len(self._field.snakes)} Food={len(self._field.food)} Age={self._field.age}")
 
-    def _drawPoint(self, p: tuple, c: Color):
-        pg.draw.rect(self._surf, c.toTuple, (
-            FieldScene.CanvasMargin + p[0] *
-            (FieldScene.CanvasBlockSize + FieldScene.CanvasMargin),
-            FieldScene.CanvasMargin + p[1] *
-            (FieldScene.CanvasBlockSize + FieldScene.CanvasMargin),
-            FieldScene.CanvasBlockSize,
-            FieldScene.CanvasBlockSize))
+    def _drawPoint(self, p: tuple, color: Color):
+        self._drawPILField.rectangle(
+            xy=self._pointToScreenRect(p), fill=color.toTuple, outline=COLOR_EMPTY.toTuple, width=1)
+        # draw = ImageDraw.Draw(img)
+        # draw.line((0, 0) + img.size, fill=220)
+        # PIL.Image.putpixel(xy, value)
 
     def _prepareSurf(self):
-        changed = False
-        if self._surf is None:
-            self._surf = pg.Surface(self._draw_size)
-            changed = True
-
-        if changed or self._field.needRedraw:
-            self._surf.fill(COLOR_EMPTY.toTuple)
+        if self._field.needRedraw:
+            self._imgPILField.paste(
+                COLOR_EMPTY.toTuple, (0, 0, self._imgPILField.size[0], self._imgPILField.size[1]))
 
             for p in self._field.food:
                 self._drawPoint(p, COLOR_FOOD)

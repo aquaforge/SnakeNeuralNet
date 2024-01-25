@@ -22,7 +22,7 @@ class Color:
         return Color(c[0], c[1], c[2])
 
     def lighter(self, val: float):
-        c = [i+(230-i)*val/2 for i in self.toTuple]
+        c = [int(i+(230-i)*val/2) for i in self.toTuple]
         return Color(c[0], c[1], c[2])
 
     def darker(self, val: float = 0.7):

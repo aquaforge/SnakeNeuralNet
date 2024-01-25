@@ -1,3 +1,4 @@
+import time
 from tkinter import NW, Tk, Canvas
 from PIL import Image, ImageDraw, ImageTk
 from Color import COLOR_FOOD, Color, COLOR_EMPTY
@@ -24,10 +25,12 @@ class FieldScene(object):
     def drawAll(self):
         self._prepareSurf()
         if self._needRedraw:
-            self._imgPILField.save("a1.png")
+            # self._imgPILField.save("a1.png")
+            t = ImageTk.PhotoImage(self._imgPILField)
+            # time.sleep(2.5)
             self._canvasField.create_image(
-                0, 0, anchor=NW, image=ImageTk.PhotoImage(self._imgPILField))
-            # self._root.update_idletasks()            
+                0, 0, anchor=NW, image=t)
+            self._root.update_idletasks()
             self._needRedraw = False
         self.setCaption()
 
@@ -40,7 +43,7 @@ class FieldScene(object):
                 (p[0]+1)*self._canvasBlockSize, (p[1]+1)*self._canvasBlockSize)
 
     def _drawPoint(self, p: tuple, color: Color):
-        ps=self._pointToScreenRect(p)
+        ps = self._pointToScreenRect(p)
         self._drawPILField.rectangle(
             xy=ps, fill=color.toTuple, outline=COLOR_EMPTY.toTuple, width=1)
         # draw = ImageDraw.Draw(img)
@@ -50,7 +53,7 @@ class FieldScene(object):
     def _prepareSurf(self):
         if self._field.needRedraw:
             self._imgPILField.paste(
-               COLOR_EMPTY.toTuple, (0, 0, self._imgPILField.size[0], self._imgPILField.size[1]))
+                COLOR_EMPTY.toTuple, (0, 0, self._imgPILField.size[0], self._imgPILField.size[1]))
 
             for p in self._field.food:
                 self._drawPoint(p, COLOR_FOOD)

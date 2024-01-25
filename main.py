@@ -25,29 +25,27 @@ SNAKE_VIEW_RADIUS = 2
 
 SCREEN_WIDTH = 1600
 SCREEN_HEIGHT = 900
-CANVAS_BLOCK_SIZE = 15
+CANVAS_BLOCK_SIZE = 10
 
 
-STEP_DELAY = 0.05
+STEP_DELAY_MS = 500
 
 running: bool = True
 
 
 def calculations(root: Tk, field: Field, fieldScene: FieldScene):
     global running
-    if len(field.snakes) == 0:
+    if running and len(field.snakes) == 0:
         running = False
     else:
         start = datetime.now()
         field.doOneStep()
         end = datetime.now()
-        d = STEP_DELAY-(end - start).total_seconds()
-        if d > 0:
-            pass  # time.sleep(STEP_DELAY)
+        d = int(STEP_DELAY_MS-1000*(end - start).total_seconds())
+        print(d)
         fieldScene.drawAll()
-
-    if running:
-        root.after(100, calculations, root, field, fieldScene)
+        root.after(d if d > 0 else STEP_DELAY_MS,
+                   calculations, root, field, fieldScene)
 
 
 def main():
@@ -68,7 +66,7 @@ def main():
     v = ttk.Scrollbar(master=frameRight, orient=VERTICAL)
     h = ttk.Scrollbar(master=frameRight, orient=HORIZONTAL)
 
-    canvasField = Canvas(master=frameRight, scrollregion=(0, 0, FIELD_WIDTH*CANVAS_BLOCK_SIZE, 
+    canvasField = Canvas(master=frameRight, scrollregion=(0, 0, FIELD_WIDTH*CANVAS_BLOCK_SIZE,
                                                           FIELD_HEIGHT*CANVAS_BLOCK_SIZE),
                          bg="white", yscrollcommand=v.set, xscrollcommand=h.set)
     h["command"] = canvasField.xview

@@ -57,23 +57,33 @@ class Snake:
     @property
     def len(self) -> int: return len(self._body)
 
-    def die(self, food: set):
-        #for p in self._body:
-        #    food.add(p)
+    def die(self, food, setPoint):
+        for p in self._body:
+            setPoint()
+            food.add(p)
         self._body = list()
         self._alive = False
 
     def _removeTail(self):
         self._body.pop()
 
-    def doOneStep(self, food: set, getPointType):
+    def getColorByBodyId(self, bodyId: int):
+        if len(self._body) > 0 and 0 <= bodyId < len(self._body):
+            if bodyId == 0:
+                return self._color.darker().toHTMLColor
+            else:
+                return self._color.lighter(bodyId/len(self._body)).toHTMLColor
+        else:
+            pass  # raise
+
+    def doOneStep(self, food: set, getPointType, setPoint):
         self._health -= HEALTH_STEP
         if self._health <= 0.0:
             if len(self._body) > TAIL_MIN_LENTH:
                 self._removeTail()
                 self._health += HEALTH_TAIL
             else:
-                return self.die(food)
+                return self.die(food, setPoint)
 
         view = np.full((2*self._viewRadius+1, 2*self._viewRadius+1), 0.0)
         # head_in_view = (SNAKE_VIEW_RADIUS, SNAKE_VIEW_RADIUS)

@@ -117,7 +117,7 @@ def main():
             # model.add(len(MoveDirection)+1, activation="relu", use_bias=False)
             model.add(len(MoveDirection), activation="softmax")
 
-            field.snakes.add(Snake([(w, h+k) for k in range(5)], SNAKE_VIEW_RADIUS, model, Direction.LEFT,
+            field.addSnakeToField(Snake([(w, h+k) for k in range(5)], SNAKE_VIEW_RADIUS, model, Direction.LEFT,
                                    Color.randomColor(COLOR_SNAKE_RANGE[0], COLOR_SNAKE_RANGE[1])))
             w += 3
         h += 7

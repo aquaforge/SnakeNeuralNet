@@ -32,5 +32,7 @@ class Color:
 COLOR_FOOD = Color(255, 0, 0)
 COLOR_EMPTY = Color(210, 210, 210)
 COLOR_WALL = Color(0, 0, 0)
+COLOR_OUTLINE = Color(70, 70, 70)
+COLOR_SELECTED = Color(50, 230, 50)
 
 COLOR_SNAKE_RANGE = (100, 200)

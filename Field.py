@@ -10,7 +10,7 @@ class Field:
         self._width = width  # это слева направо
         self._height = height  # это сверху вниз
 
-        self._maxFoodCount = 0.05 * width * height
+        self._maxFoodCount = int(0.05 * width * height)
         self._foodCount = 0
 
         self._snakes = set()

@@ -7,7 +7,7 @@ from Snake import Snake
 
 
 class FieldScene(object):
-    def __init__(self, field: Field, canvasBlockSize: int, root: Tk, canvasField: Canvas):
+    def __init__(self, field: Field, canvasBlockSize: int, root: Tk, canvasField: Canvas,  canvasHead: Canvas):
         self._field = field
         self._canvasBlockSize = canvasBlockSize
         self._root = root
@@ -21,6 +21,14 @@ class FieldScene(object):
             for j in range(self._field._height):
                 self._sceneData[i][j] = self._drawRect(
                     canvasField, (i, j), self._field.getPointColorHTML((i, j)), colorOutline)
+
+        k = 2*self._canvasBlockSize+1
+        self._headData = [[None for h in range(k)] for w in range(k)]
+        for i in range(k):
+            for j in range(k):
+                self._headData[i][j] = self._drawRect(
+                    canvasHead, (i, j), COLOR_EMPTY.toHTMLColor, colorOutline)
+
 
         self._field.setRedrawed()
         self._needRedraw = False

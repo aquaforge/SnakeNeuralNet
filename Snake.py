@@ -21,7 +21,6 @@ class Snake:
                           Direction.LEFT: (1, 0), Direction.RIGHT: (1, 0)}
     selectedSnake = None
 
-
     def __init__(self, body: list, brain: BrainBase, headViewDirection: Direction, color: Color = Color.randomColor(100, 200),  health: float = 100.0):
         self._body = body
         self._brain = brain
@@ -73,7 +72,6 @@ class Snake:
         if Snake.selectedSnake == self:
             Snake.selectedSnake = None
 
-
     def _removeTail(self, setPoint):
         if len(self._body) == 0:
             pass  # raise
@@ -98,21 +96,24 @@ class Snake:
             else:
                 return self.die(setPoint)
 
-        view = np.full((2*self._brain.viewRadius+1, 2 *
-                       self._brain.viewRadius+1), 0.0)
+        # view = np.full((2*self._brain.viewRadius+1, 2 *
+        #                self._brain.viewRadius+1), 0.0)
 
-        head = self.head
-        for x in range(view.shape[1]):
-            for y in range(view.shape[0]):
-                pt = getPointType((
-                    head[0]-self._brain.viewRadius+x, head[1]-self._brain.viewRadius+y))
-                view[y, x] = -1 if pt == PointType.SNAKE else int(pt)
+        # head = self.head
+        # for x in range(view.shape[1]):
+        #     for y in range(view.shape[0]):
+        #         pt = getPointType((
+        #             head[0]-self._brain.viewRadius+x, head[1]-self._brain.viewRadius+y))
+        #         view[y, x] = -1 if pt == PointType.SNAKE else int(pt)
 
-        if self._headView != Direction.UP:
-            view = np.rot90(view, int(self._headView))
+        # if self._headView != Direction.UP:
+        #     view = np.rot90(view, int(self._headView))
+        view = self.getHeadView(getPointType)
 
         action = self._brain.getDirection(view)
         self._move(action, getPointType, setPoint)
+        if Snake.selectedSnake == None and self.alive:
+            Snake.selectedSnake = self
 
     def _move(self, action: MoveDirection, getPointType, setPoint):
         if (not self._alive or self.len == 0 or action == MoveDirection.STAY):
@@ -144,3 +145,16 @@ class Snake:
         self._body = [new_head] + self._body
         for i, p in enumerate(self._body):
             setPoint(p, PointType.SNAKE, self.getColorByBodyId(i))
+
+    def getHeadView(self, getPointType) -> np.array:
+        view = np.full((2*self._brain.viewRadius+1, 2 *
+                       self._brain.viewRadius+1), 0.0)
+        head = self.head
+        for x in range(view.shape[1]):
+            for y in range(view.shape[0]):
+                pt = getPointType((
+                    head[0]-self._brain.viewRadius+x, head[1]-self._brain.viewRadius+y))
+                view[y, x] = -1 if pt == PointType.SNAKE else int(pt)
+        if self._headView != Direction.UP:
+            view = np.rot90(view, int(self._headView))
+        return view

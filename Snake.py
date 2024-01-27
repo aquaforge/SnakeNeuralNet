@@ -1,9 +1,11 @@
+import json
 import numpy as np
 from Brains.BrainBase import BrainBase
 from Color import COLOR_EMPTY, Color
 from Enums.Direction import Direction
 from Enums.MoveDirection import MoveDirection
 from Enums.PointType import PointType
+from NumpyArrayEncoder import NumpyArrayEncoder
 
 
 HEALTH_STEP = 1.0
@@ -15,6 +17,7 @@ TAIL_MAX_LENTH = 16
 class Snake:
     mapDirectionArrows = {Direction.UP: (0, -1),   Direction.DOWN: (0, 1),
                           Direction.LEFT: (-1, 0), Direction.RIGHT: (1, 0)}
+    pathData = []
 
     def __init__(self, body: list, brain: BrainBase, headViewDirection: Direction, color: Color = Color.randomColor(100, 200),  health: float = 100.0):
 
@@ -92,11 +95,19 @@ class Snake:
                 self._health += HEALTH_TAIL
             else:
                 return self.die(setPoint)
-        action = self._brain.getDirection(self.getHeadView(getPointType))
+        view = self.getHeadView(getPointType)
+        # print(view)
+        action = self._brain.getDirection(view)
+        if type(self._brain).__name__ == "BrainPathFind":
+            # print (view.T)
+            str = json.dumps(view.T, cls=NumpyArrayEncoder).replace(" ", "")
+            # print (b)
+            Snake.pathData.append({"path": str, "result": int(
+                action), "viewSize": self._brain.viewRadius})
+
         self._move(action, getPointType, setPoint)
         if len(self._body) >= TAIL_MAX_LENTH:
             self._giveBirth(setPoint, addSnakeToField)
-
 
     def _move(self, action: MoveDirection, getPointType, setPoint):
         if (not self._alive or self.len == 0 or action == MoveDirection.STAY):
@@ -144,13 +155,14 @@ class Snake:
             view = np.rot90(view, int(self._headView))
         return view
 
-
     def _giveBirth(self, setPoint, addSnakeToField):
         if not self.alive or len(self._body) < TAIL_MAX_LENTH:
             return
         body = self._body[-1:TAIL_MAX_LENTH//2-1:-1]
-        for i in range (TAIL_MAX_LENTH//2):
+        for i in range(TAIL_MAX_LENTH//2):
             self._removeTail(setPoint)
-        
-        addSnakeToField(Snake(body, self._brain, Direction.UP,self.color.darker(0.9)))
+
+        addSnakeToField(
+            Snake(body, self._brain, Direction.UP, self.color.darker(0.9)))
+
 

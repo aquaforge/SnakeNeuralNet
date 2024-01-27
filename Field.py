@@ -2,6 +2,7 @@ from random import randint
 from Color import COLOR_EMPTY, COLOR_FOOD, COLOR_WALL
 from Enums.PointType import PointType
 from Snake import Snake
+from db import DbOperations
 
 
 class Field:
@@ -114,9 +115,20 @@ class Field:
             self._snakes -= deletedSnakes
 
         self.addFood()
+        if len(Snake.pathData) > 1000:
+            self._saveToDB()
 
         # if self.selectedSnake == None or self.selectedSnake not in self._snakes or not self.selectedSnake.alive or self.selectedSnake.len == 0:
         #     self.__setSelectedRandom()
+
+    def _saveToDB(self):
+        dbo = DbOperations()
+        dbo.addBulk(Snake.pathData)
+        print(f"В БД: {dbo.getCountRows()}")
+        Snake.pathData = []
+
+    def __del__(self):
+        self._saveToDB()
 
     def __setSelectedRandom(self):
         for sn in self._snakes:

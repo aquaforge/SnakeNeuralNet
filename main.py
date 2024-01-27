@@ -76,11 +76,18 @@ def main():
     frameLeft = ttk.Frame(master=root, borderwidth=1,
                           padding=10, relief=SOLID, width=300)
     frameLeft.pack(side=LEFT, fill=Y, padx=2, pady=2)
-    label = ttk.Label(frameLeft, text="Snake Head View")
-    label.pack(anchor=NW)
+
+    snakeInfo = Text(master=frameLeft, width=15, height=5, wrap="word")
+    # snakeInfo.pack(anchor=NW)
+    snakeInfo.grid(row=1, column=1)
+
     canvasHead = Canvas(master=frameLeft, width=(2*SNAKE_VIEW_RADIUS+1)*15,
                         height=(2*SNAKE_VIEW_RADIUS+1)*15, bg=COLOR_EMPTY.toHTMLColor)
-    canvasHead.pack(anchor=NW)
+    # canvasHead.pack(anchor=NW)
+    canvasHead.grid(row=2, column=1)
+
+    frameLeft.grid_columnconfigure(0, weight=1)
+    frameLeft.grid_rowconfigure(0, weight=1)    
 
     frameRight = ttk.Frame(master=root, borderwidth=1, relief=SOLID)
     frameRight.pack(fill=BOTH, expand=True,  padx=2, pady=2)
@@ -120,7 +127,7 @@ def main():
 
     field.addFood()
     fieldScene = FieldScene(field, CANVAS_BLOCK_SIZE,
-                            root, canvasField, canvasHead)
+                            root, canvasField, canvasHead, snakeInfo)
 
     # th = Thread(name="calculation", target=calculations,                daemon=True, args=(field, fieldScene))
     # th.start()

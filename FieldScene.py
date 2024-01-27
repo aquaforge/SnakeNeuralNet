@@ -1,21 +1,24 @@
-from tkinter import Tk, Canvas
+from tkinter import END, Text, Tk, Canvas
 from PIL import Image
-from Color import COLOR_EMPTY, COLOR_FOOD, COLOR_OUTLINE, COLOR_SELECTED, COLOR_WALL
+from Color import COLOR_EMPTY, COLOR_FOOD, COLOR_OUTLINE, COLOR_SELECTED, COLOR_SNAKE, COLOR_WALL
+from Enums.PointType import PointType
 
 from Field import Field
 from Snake import Snake
 
 
 class FieldScene(object):
-    def __init__(self, field: Field, canvasBlockSize: int, root: Tk, canvasField: Canvas,  canvasHead: Canvas):
+    def __init__(self, field: Field, canvasBlockSize: int, root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo: Text):
         self._field = field
         self._canvasBlockSize = canvasBlockSize
         self._root = root
         self._canvasField = canvasField
         self._canvasHead = canvasHead
+        self._snakeInfo = snakeInfo
 
         self._canvasField.delete("all")
         self._canvasHead.delete("all")
+        self._snakeInfo.delete(1.0, END)
 
         self._sceneData = [[None for h in range(
             self._field.height)] for w in range(self._field.width)]
@@ -58,7 +61,7 @@ class FieldScene(object):
 
             self._field.setRedrawed()
             self._needRedraw = False
-            self._drawSnakeView()
+            self._drawSnakeInfo()
         self.setCaption()
 
     def setCaption(self):
@@ -69,12 +72,14 @@ class FieldScene(object):
         return (p[0]*self._canvasBlockSize, p[1]*self._canvasBlockSize,
                 (p[0]+1)*self._canvasBlockSize, (p[1]+1)*self._canvasBlockSize)
 
-    def _drawSnakeView(self):
+    def _drawSnakeInfo(self):
         self._canvasHead.delete("all")
+        self._snakeInfo.delete(1.0, END)        
         if self._field.selectedSnake is not None:
             snake =  self._field.selectedSnake
-            view = snake.getHeadView(self._field.getPointType)
+            self._snakeInfo.insert(1.0, snake.headViewDirection)
 
+            view = snake.getHeadView(self._field.getPointType, asPointType=True)
             colorEmpty = COLOR_EMPTY.toHTMLColor
             arrayDim = 2*snake.viewRadius+1
             blockSize = 15
@@ -84,10 +89,13 @@ class FieldScene(object):
                 for j in range(arrayDim):
                     col = COLOR_EMPTY.toHTMLColor
                     if i == snake.viewRadius and j == snake.viewRadius:
-                        col = "#BBBBBB"
-                    elif view[i, j] == 1:
+                        col = COLOR_SNAKE.darker().toHTMLColor
+                    elif view[i, j] == PointType.FOOD:
                         col = COLOR_FOOD.toHTMLColor
-                    elif view[i, j] == -1:
+                    elif view[i, j] == PointType.WALL:
                         col = COLOR_WALL.toHTMLColor
+                    elif view[i, j] == PointType.SNAKE:
+                        col = COLOR_SNAKE.toHTMLColor
+
                     self._drawRect(self._canvasHead, (i, j),
                                    blockSize, col, colorEmpty)

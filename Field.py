@@ -106,7 +106,8 @@ class Field:
         self._age += 1
 
         for snake in self._snakes:
-            snake.doOneStep(self.getPointType, self.setPoint)
+            snake.doOneStep(self.getPointType, self.setPoint,
+                            self.addSnakeToField)
 
         deletedSnakes = set(snake for snake in self._snakes if (
             not snake.alive or snake.len == 0))

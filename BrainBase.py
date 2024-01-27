@@ -1,21 +1,34 @@
-from abc import ABC, abstractmethod
+import json
 
 import numpy as np
 from Enums.MoveDirection import MoveDirection
 
 
-class BrainBase (ABC):
-
+class BrainBase():
     def __init__(self, viewRadius: int):
         self._viewRadius = viewRadius
 
     @property
     def viewRadius(self): return self._viewRadius
 
-    @abstractmethod
     def getDirection(self, view: np.array) -> MoveDirection:
-        pass
+        '''view: np 2D matrix'''
+        if view[self._viewRadius, self._viewRadius-1] != -1:
+            return MoveDirection.FORWARD
+        elif view[self._viewRadius-1, self._viewRadius] != -1:
+            return MoveDirection.LEFT
+        elif view[self._viewRadius+1, self._viewRadius] != -1:
+            return MoveDirection.RIGHT
+        else:
+            return MoveDirection.STAY
 
-    @abstractmethod
+    @property
+    def getInfoDict(self):
+        return {"brainType": type(self).__name__,
+                "viewRadius": self._viewRadius}
+
+    @property
     def toJsonStr(self) -> str:
-        pass
+        # json.dumps() is used to decode JSON data
+        # https://docs-python.ru/standart-library/modul-json-python/funktsija-dumps-modulja-json/
+        return json.dumps(self.getInfoDict, indent=4)

@@ -8,11 +8,11 @@ class BrainPathFind (BrainBase):
         super().__init__(viewRadius)
 
     def _getSimpleDirection(self, view: np.array) -> MoveDirection:
-        if view[self._viewRadius, self._viewRadius-1] == 0:
+        if view[self._viewRadius, self._viewRadius-1] != -1:
             return MoveDirection.FORWARD
-        elif view[self._viewRadius-1, self._viewRadius] == 0:
+        elif view[self._viewRadius-1, self._viewRadius] != -1:
             return MoveDirection.LEFT
-        elif view[self._viewRadius+1, self._viewRadius] == 0:
+        elif view[self._viewRadius+1, self._viewRadius] != -1:
             return MoveDirection.RIGHT
         else:
             return MoveDirection.STAY

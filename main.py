@@ -6,6 +6,7 @@ from tkinter import ttk
 from PIL import Image, ImageDraw, ImageTk
 from random import randint
 from threading import Thread
+from BrainBase import BrainBase
 from BrainSimpleNN import BrainSimpleNN
 from Enums.Direction import Direction
 from Enums.MoveDirection import MoveDirection
@@ -57,6 +58,9 @@ def initializeAll(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo:
 
             field.addSnakeToField(Snake([(w, h+k) for k in range(7)], BrainSimpleNN(SNAKE_VIEW_RADIUS, model), Direction.UP,
                                         Color.randomColor(COLOR_SNAKE_RANGE[0], COLOR_SNAKE_RANGE[1])))
+
+            # field.addSnakeToField(Snake([(w, h+k) for k in range(7)], BrainBase(SNAKE_VIEW_RADIUS), Direction.UP,
+            #                             Color.randomColor(COLOR_SNAKE_RANGE[0], COLOR_SNAKE_RANGE[1])))
             w += 5
         h += 15
 

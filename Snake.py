@@ -99,7 +99,7 @@ class Snake:
         action = self._brain.getDirection(self.getHeadView(getPointType))
         self._move(action, getPointType, setPoint)
         if len(self._body) > TAIL_MAX_LENTH:
-            self._giveBirth()
+            self._giveBirth(setPoint, addSnakeToField)
 
     def _giveBirth(self, setPoint, addSnakeToField):
         pass  # TODO

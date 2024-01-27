@@ -2,7 +2,7 @@ from random import randint
 from Color import COLOR_EMPTY, COLOR_FOOD, COLOR_WALL
 from Enums.PointType import PointType
 from Snake import Snake
-from db import DbOperations
+from dbPathData import DbPathData
 
 
 class Field:

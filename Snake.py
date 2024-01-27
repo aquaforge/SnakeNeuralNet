@@ -6,7 +6,7 @@ from Enums.Direction import Direction
 from Enums.MoveDirection import MoveDirection
 from Enums.PointType import PointType
 from NumpyArrayEncoder import NumpyArrayEncoder
-from db import DbOperations
+from dbPathData import DbPathData
 
 
 HEALTH_STEP = 1.0
@@ -187,7 +187,7 @@ class Snake:
         #     Snake(body, self._brain, Direction.UP, self.color.darker(0.9)))
 
     def _saveToDB(self):
-        dbo = DbOperations()
+        dbo = DbPathData()
         dbo.addBulk(Snake.pathData)
         print(f"В БД: {dbo.getCountRows()}")
         Snake.pathData = []

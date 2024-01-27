@@ -6,6 +6,8 @@ from sqlalchemy.dialects.sqlite import insert as sqlite_upsert
   
 # https://metanit.com/python/database/3.3.php
 
+#https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html
+
 class Base(DeclarativeBase): pass
 class PathDataInfo(Base):
     __tablename__ = "PathDataInfo"
@@ -14,12 +16,12 @@ class PathDataInfo(Base):
     viewSize = Column(Integer, nullable = False)
     hasFood = Column(Integer, nullable = False)
 
-class DbOperations():
+class DbPathData():
     # строка подключения
     sqlite_database = "sqlite:///PathData.db"
 
     def __init__(self):    
-        self._engine = create_engine(DbOperations.sqlite_database, echo=False)
+        self._engine = create_engine(DbPathData.sqlite_database, echo=False)
         Base.metadata.create_all(bind=self._engine)
  
 

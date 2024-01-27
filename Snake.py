@@ -103,7 +103,7 @@ class Snake:
             str = json.dumps(view.T, cls=NumpyArrayEncoder).replace(" ", "")
             # print (b)
             Snake.pathData.append({"path": str, "result": int(
-                action), "viewSize": self._brain.viewRadius})
+                action), "viewSize": self._brain.viewRadius, "hasFood": (int(PointType.FOOD) in view)})
 
         self._move(action, getPointType, setPoint)
         if len(self._body) >= TAIL_MAX_LENTH:
@@ -164,5 +164,3 @@ class Snake:
 
         addSnakeToField(
             Snake(body, self._brain, Direction.UP, self.color.darker(0.9)))
-
-

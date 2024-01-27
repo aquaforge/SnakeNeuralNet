@@ -12,6 +12,7 @@ class PathDataInfo(Base):
     path = Column(String, primary_key=True, index=True)
     result = Column(Integer, nullable = False)
     viewSize = Column(Integer, nullable = False)
+    hasFood = Column(Integer, nullable = False)
 
 class DbOperations():
     # строка подключения

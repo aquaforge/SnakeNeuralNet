@@ -10,7 +10,7 @@ class Field:
         self._width = width  # это слева направо
         self._height = height  # это сверху вниз
 
-        self._maxFoodCount = int(0.05 * width * height)
+        self._maxFoodCount = int(0.02 * width * height)
         self._foodCount = 0
 
         self._snakes = set()
@@ -104,7 +104,7 @@ class Field:
         self._needRedraw = True
         self._age += 1
 
-        for snake in self._snakes:
+        for snake in self._snakes.copy():
             snake.doOneStep(self.getPointType, self.setPoint,
                             self.addSnakeToField)
 
@@ -115,8 +115,8 @@ class Field:
 
         self.addFood()
 
-        if self.selectedSnake == None or self.selectedSnake not in self._snakes or not self.selectedSnake.alive or self.selectedSnake.len == 0:
-            self.__setSelectedRandom()
+        # if self.selectedSnake == None or self.selectedSnake not in self._snakes or not self.selectedSnake.alive or self.selectedSnake.len == 0:
+        #     self.__setSelectedRandom()
 
     def __setSelectedRandom(self):
         for sn in self._snakes:
@@ -145,4 +145,4 @@ class Field:
                 self.setPoint(p, PointType.SNAKE, snake.getColorByBodyId(i))
 
             self._snakes.add(snake)
-            self.selectedSnake = snake
+            # self.selectedSnake = snake

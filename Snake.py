@@ -17,6 +17,7 @@ class Snake:
                           Direction.LEFT: (-1, 0), Direction.RIGHT: (1, 0)}
 
     def __init__(self, body: list, brain: BrainBase, headViewDirection: Direction, color: Color = Color.randomColor(100, 200),  health: float = 100.0):
+
         self._body = body
         self._brain = brain
         self._headView = headViewDirection
@@ -93,11 +94,9 @@ class Snake:
                 return self.die(setPoint)
         action = self._brain.getDirection(self.getHeadView(getPointType))
         self._move(action, getPointType, setPoint)
-        if len(self._body) > TAIL_MAX_LENTH:
+        if len(self._body) >= TAIL_MAX_LENTH:
             self._giveBirth(setPoint, addSnakeToField)
 
-    def _giveBirth(self, setPoint, addSnakeToField):
-        pass  # TODO
 
     def _move(self, action: MoveDirection, getPointType, setPoint):
         if (not self._alive or self.len == 0 or action == MoveDirection.STAY):
@@ -144,3 +143,14 @@ class Snake:
         if self._headView != Direction.UP:
             view = np.rot90(view, int(self._headView))
         return view
+
+
+    def _giveBirth(self, setPoint, addSnakeToField):
+        if not self.alive or len(self._body) < TAIL_MAX_LENTH:
+            return
+        body = self._body[-1:TAIL_MAX_LENTH//2-1:-1]
+        for i in range (TAIL_MAX_LENTH//2):
+            self._removeTail(setPoint)
+        
+        addSnakeToField(Snake(body, self._brain, Direction.UP,self.color.darker(0.9)))
+

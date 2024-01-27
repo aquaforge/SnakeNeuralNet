@@ -29,12 +29,12 @@ class BrainPathFind (BrainBase):
             pf = np.copy(view).T
             pf[pf == 1] = BrainPathFind.FOOD_REPLACE
 
-            print(pf)
+            #print(pf)
             endPoint = self._prepareWavePath(startPoint, pf)
             if endPoint == None:
                 return self._getSimpleDirection(view)
             else:
-                print(pf)
+                #print(pf)
                 path = [endPoint[::-1]]
                 p = endPoint
                 stepCounter = 0
@@ -48,7 +48,7 @@ class BrainPathFind (BrainBase):
                                 path = [n[::-1]]+path
                                 p = n
                                 break
-                print(path)
+                #print(path)
                 if len(path) == 1:
                     path
                     # raise

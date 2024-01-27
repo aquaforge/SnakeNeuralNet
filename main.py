@@ -16,8 +16,8 @@ from FieldScene import FieldScene
 
 # https://ru.hexlet.io/blog/posts/19-bibliotek-dlya-python?ysclid=lrus9b9ejh622626382
 
-FIELD_WIDTH = 50
-FIELD_HEIGHT = 35
+FIELD_WIDTH = 80
+FIELD_HEIGHT = 50
 CANVAS_BLOCK_SIZE = 15
 
 SNAKE_VIEW_RADIUS = 3

@@ -11,7 +11,7 @@ class Field:
         self._width = width  # это слева направо
         self._height = height  # это сверху вниз
 
-        self._maxFoodCount = int(0.02 * width * height)
+        self._maxFoodCount = int(0.01 * width * height)
         self._foodCount = 0
 
         self._snakes = set()
@@ -115,20 +115,10 @@ class Field:
             self._snakes -= deletedSnakes
 
         self.addFood()
-        if len(Snake.pathData) > 1000:
-            self._saveToDB()
-
-        # if self.selectedSnake == None or self.selectedSnake not in self._snakes or not self.selectedSnake.alive or self.selectedSnake.len == 0:
-        #     self.__setSelectedRandom()
-
-    def _saveToDB(self):
-        dbo = DbOperations()
-        dbo.addBulk(Snake.pathData)
-        print(f"В БД: {dbo.getCountRows()}")
-        Snake.pathData = []
 
     def __del__(self):
-        self._saveToDB()
+        # self._saveToDB()
+        pass
 
     def __setSelectedRandom(self):
         for sn in self._snakes:

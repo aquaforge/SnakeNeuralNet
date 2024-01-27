@@ -17,16 +17,24 @@ from FieldScene import FieldScene
 
 # https://ru.hexlet.io/blog/posts/19-bibliotek-dlya-python?ysclid=lrus9b9ejh622626382
 
-FIELD_WIDTH = 50
-FIELD_HEIGHT = 45
+FIELD_WIDTH = 100
+FIELD_HEIGHT = 50
 CANVAS_BLOCK_SIZE = 15
 
-SNAKE_VIEW_RADIUS = 2
+# FIELD_WIDTH = 500
+# FIELD_HEIGHT = 100
+# CANVAS_BLOCK_SIZE = 10
 
-SCREEN_WIDTH = 1600
+
+
+
+
+SNAKE_VIEW_RADIUS = 3
+
+SCREEN_WIDTH = 1800
 SCREEN_HEIGHT = 900
 
-STEP_DELAY_MS = 10
+STEP_DELAY_MS = 100
 
 running: bool = True
 paused: bool = False
@@ -85,10 +93,11 @@ def calculateOne(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo: 
         start = datetime.now()
         if not paused:
             field.doOneStep()
+            fieldScene.drawAll()
+            # fieldScene.saveImage("aa.png")
         end = datetime.now()
         d = int(STEP_DELAY_MS-1000*(end - start).total_seconds())
         # print(d)
-        fieldScene.drawAll()
         root.after(d if d > 0 else STEP_DELAY_MS, calculateOne,
                    root, canvasField,  canvasHead, snakeInfo)
 
@@ -111,7 +120,7 @@ def main():
 
     root = Tk()
     root.bind('<Key>', onWindowKeyPress)
-    root.geometry("1000x800+100+100")
+    root.geometry(f"{SCREEN_WIDTH}x{SCREEN_HEIGHT}+10+10")
 
     frameLeft = ttk.Frame(master=root, borderwidth=1,
                           padding=10, relief=SOLID, width=300)

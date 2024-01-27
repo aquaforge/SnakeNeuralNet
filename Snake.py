@@ -6,6 +6,7 @@ from Enums.Direction import Direction
 from Enums.MoveDirection import MoveDirection
 from Enums.PointType import PointType
 from NumpyArrayEncoder import NumpyArrayEncoder
+from db import DbOperations
 
 
 HEALTH_STEP = 1.0
@@ -29,6 +30,8 @@ class Snake:
 
         self._alive = True
         self._age = 0
+        self._countEat = 0
+        self._countGiveBirth=0
 
         self.mapDirectionArrows = {Direction.UP: (0, -1),   Direction.DOWN: (0, 1),
                                    Direction.LEFT: (1, 0), Direction.RIGHT: (1, 0)}
@@ -41,6 +44,13 @@ class Snake:
 
     @property
     def headViewDirection(self) -> Direction: return self._headView
+
+    @property
+    def rankPersent(self) -> float:
+        if self._age==0:
+            return 0
+        else:
+            return round(100.0 * self._countEat/self._age, 2)
 
     @property
     def health(self) -> float: return self._health
@@ -88,6 +98,7 @@ class Snake:
             pass  # raise
 
     def doOneStep(self, getPointType, setPoint, addSnakeToField):
+        self._age+=1
         self._health -= HEALTH_STEP
         if self._health <= 0.0:
             if len(self._body) > TAIL_MIN_LENTH:
@@ -104,6 +115,9 @@ class Snake:
             # print (b)
             Snake.pathData.append({"path": str, "result": int(
                 action), "viewSize": self._brain.viewRadius, "hasFood": (int(PointType.FOOD) in view)})
+
+            if len(Snake.pathData) > 1000:
+                self._saveToDB()
 
         self._move(action, getPointType, setPoint)
         if len(self._body) >= TAIL_MAX_LENTH:
@@ -132,7 +146,7 @@ class Snake:
             self.die(setPoint)
             return
         elif pt == PointType.FOOD:
-            pass
+            self._countEat += 1
         elif pt == PointType.EMPTY:
             self._removeTail(setPoint)
 
@@ -158,9 +172,15 @@ class Snake:
     def _giveBirth(self, setPoint, addSnakeToField):
         if not self.alive or len(self._body) < TAIL_MAX_LENTH:
             return
+        self._countGiveBirth+=1
         body = self._body[-1:TAIL_MAX_LENTH//2-1:-1]
         for i in range(TAIL_MAX_LENTH//2):
             self._removeTail(setPoint)
+        # addSnakeToField(
+        #     Snake(body, self._brain, Direction.UP, self.color.darker(0.9)))
 
-        addSnakeToField(
-            Snake(body, self._brain, Direction.UP, self.color.darker(0.9)))
+    def _saveToDB(self):
+        dbo = DbOperations()
+        dbo.addBulk(Snake.pathData)
+        print(f"В БД: {dbo.getCountRows()}")
+        Snake.pathData = []

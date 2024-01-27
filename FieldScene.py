@@ -37,7 +37,7 @@ class FieldScene(object):
         return canvasField.create_rectangle(p[0]*blockSize+1, p[1]*blockSize+1, (p[0]+1)*blockSize+1,
                                             (p[1]+1)*blockSize+1, fill=fillColor, outline=outlineColor)
 
-    def save(self, name):
+    def saveImage(self, name):
         img = Image.new(mode="RGB", size=(
             self._field.width, self._field.height), color=COLOR_EMPTY.toTuple)
 
@@ -81,7 +81,7 @@ class FieldScene(object):
         if not snake.alive or snake.len == 0:
             return
 
-        self._snakeInfo.insert(1.0, str(snake.headViewDirection) + "\n" + str(snake.len))
+        self._snakeInfo.insert(1.0, str(snake.headViewDirection) + "\n" + str(snake.len) + "\n" + str(snake.rankPersent))
 
         view = snake.getHeadView(self._field.getPointType, asPointType=True)
         colorEmpty = COLOR_EMPTY.toHTMLColor

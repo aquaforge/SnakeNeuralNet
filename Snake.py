@@ -31,7 +31,7 @@ class Snake:
         self._alive = True
         self._age = 0
         self._countEat = 0
-        self._countGiveBirth=0
+        self._countGiveBirth = 0
 
         self.mapDirectionArrows = {Direction.UP: (0, -1),   Direction.DOWN: (0, 1),
                                    Direction.LEFT: (1, 0), Direction.RIGHT: (1, 0)}
@@ -46,8 +46,15 @@ class Snake:
     def headViewDirection(self) -> Direction: return self._headView
 
     @property
+    def countGiveBirth(self): return self._countGiveBirth
+
+    @property
+    def countEat(self): return self._countEat
+
+
+    @property
     def rankPersent(self) -> float:
-        if self._age==0:
+        if self._age == 0:
             return 0
         else:
             return round(100.0 * self._countEat/self._age, 2)
@@ -98,7 +105,7 @@ class Snake:
             pass  # raise
 
     def doOneStep(self, getPointType, setPoint, addSnakeToField):
-        self._age+=1
+        self._age += 1
         self._health -= HEALTH_STEP
         if self._health <= 0.0:
             if len(self._body) > TAIL_MIN_LENTH:
@@ -172,7 +179,7 @@ class Snake:
     def _giveBirth(self, setPoint, addSnakeToField):
         if not self.alive or len(self._body) < TAIL_MAX_LENTH:
             return
-        self._countGiveBirth+=1
+        self._countGiveBirth += 1
         body = self._body[-1:TAIL_MAX_LENTH//2-1:-1]
         for i in range(TAIL_MAX_LENTH//2):
             self._removeTail(setPoint)

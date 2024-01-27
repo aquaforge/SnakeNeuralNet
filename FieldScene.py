@@ -81,7 +81,18 @@ class FieldScene(object):
         if not snake.alive or snake.len == 0:
             return
 
-        self._snakeInfo.insert(1.0, str(snake.headViewDirection) + "\n" + str(snake.len) + "\n" + str(snake.rankPersent))
+        dt={}
+        dt["radius"] = snake.viewRadius
+        dt["head"] = snake.headViewDirection
+        dt["len"] = snake.len
+        dt["rankPersent"] = snake.rankPersent
+        dt["countGiveBirth"] = snake.countGiveBirth
+        s=""
+        for key in dt:
+            s+= f"{key}:{dt[key]}\n"
+        self._snakeInfo.insert(1.0, s)
+
+
 
         view = snake.getHeadView(self._field.getPointType, asPointType=True)
         colorEmpty = COLOR_EMPTY.toHTMLColor

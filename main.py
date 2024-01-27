@@ -1,4 +1,5 @@
 from datetime import datetime
+from random import Random, randint
 from tkinter import *
 from tkinter import ttk
 from Brains.BrainBase import BrainBase
@@ -26,10 +27,7 @@ CANVAS_BLOCK_SIZE = 15
 # CANVAS_BLOCK_SIZE = 10
 
 
-
-
-
-SNAKE_VIEW_RADIUS = 3
+# SNAKE_VIEW_RADIUS = 3
 
 SCREEN_WIDTH = 1800
 SCREEN_HEIGHT = 900
@@ -65,7 +63,7 @@ def initializeAll(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo:
             # field.addSnakeToField(Snake([(w, h+k) for k in range(7)], BrainBase(SNAKE_VIEW_RADIUS), Direction.UP,
             #                             Color.randomColor(COLOR_SNAKE_RANGE[0], COLOR_SNAKE_RANGE[1])))
 
-            field.addSnakeToField(Snake([(w, h+k) for k in range(7)], BrainPathFind(SNAKE_VIEW_RADIUS), Direction.UP,
+            field.addSnakeToField(Snake([(w, h+k) for k in range(7)], BrainPathFind(randint(2, 7)), Direction.UP,
                                         Color.randomColor(COLOR_SNAKE_RANGE[0], COLOR_SNAKE_RANGE[1])))
 
             w += 5
@@ -87,14 +85,14 @@ def calculateOne(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo: 
 
     if not running:
         return
-    if len(field.snakes) == 0:
+    if len(field.snakes) == 0 or field.age > 1000:
         initializeAll(root, canvasField,  canvasHead, snakeInfo)
     else:
         start = datetime.now()
         if not paused:
             field.doOneStep()
-            fieldScene.drawAll()
             # fieldScene.saveImage("aa.png")
+        fieldScene.drawAll()
         end = datetime.now()
         d = int(STEP_DELAY_MS-1000*(end - start).total_seconds())
         # print(d)
@@ -126,12 +124,13 @@ def main():
                           padding=10, relief=SOLID, width=300)
     frameLeft.pack(side=LEFT, fill=Y, padx=2, pady=2)
 
-    snakeInfo = Text(master=frameLeft, width=15, height=5, wrap="word")
+    snakeInfo = Text(master=frameLeft, width=30, height=8, wrap="word")
     # snakeInfo.pack(anchor=NW)
     snakeInfo.grid(row=1, column=1)
 
-    canvasHead = Canvas(master=frameLeft, width=(2*SNAKE_VIEW_RADIUS+1)*15,
-                        height=(2*SNAKE_VIEW_RADIUS+1)*15, bg=COLOR_EMPTY.toHTMLColor)
+    view_radius = 10
+    canvasHead = Canvas(master=frameLeft, width=(2*view_radius+1)*15,
+                        height=(2*view_radius+1)*15, bg=COLOR_EMPTY.toHTMLColor)
     # canvasHead.pack(anchor=NW)
     canvasHead.grid(row=2, column=1)
 

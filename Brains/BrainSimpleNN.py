@@ -1,5 +1,5 @@
 import numpy as np
-from BrainBase import BrainBase
+from Brains.BrainBase import BrainBase
 from Enums.MoveDirection import MoveDirection
 from SimpleNN import SimpleNN
 

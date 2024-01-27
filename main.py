@@ -1,20 +1,14 @@
 from datetime import datetime
-import json
-import time
 from tkinter import *
 from tkinter import ttk
-from PIL import Image, ImageDraw, ImageTk
-from random import randint
-from threading import Thread
-from BrainBase import BrainBase
-from BrainSimpleNN import BrainSimpleNN
-from Enums.Direction import Direction
-from Enums.MoveDirection import MoveDirection
-from Color import COLOR_EMPTY, COLOR_SNAKE_RANGE, Color
+from Brains.BrainBase import BrainBase
+from Brains.BrainPathFind import BrainPathFind
+from Brains.BrainSimpleNN import BrainSimpleNN
 from SimpleNN import SimpleNN
+from Enums.Direction import Direction
+from Color import COLOR_EMPTY, COLOR_SNAKE_RANGE, Color
 from Snake import Snake
 from Field import Field
-# from Food import Food
 from FieldScene import FieldScene
 
 # pip freeze > requirements.txt
@@ -50,17 +44,22 @@ def initializeAll(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo:
     while h+15 < FIELD_HEIGHT:
         w = 2
         while w+5 < FIELD_WIDTH:
-            # здоровье+длина + массив (2*SNAKE_VIEW_RADIUS+1)^2 для взгляда занято\пусто\еда
-            model = SimpleNN((2*SNAKE_VIEW_RADIUS+1)**2)
-            model.add(10, activation="relu", use_bias=True)
-            # model.add(len(MoveDirection)+1, activation="relu", use_bias=False)
-            model.add(len(MoveDirection), activation="softmax")
+            # # здоровье+длина + массив (2*SNAKE_VIEW_RADIUS+1)^2 для взгляда занято\пусто\еда
+            # model = SimpleNN((2*SNAKE_VIEW_RADIUS+1)**2)
+            # model.add(10, activation="relu", use_bias=True)
+            # # model.add(len(MoveDirection)+1, activation="relu", use_bias=False)
+            # model.add(len(MoveDirection), activation="softmax")
 
-            field.addSnakeToField(Snake([(w, h+k) for k in range(7)], BrainSimpleNN(SNAKE_VIEW_RADIUS, model), Direction.UP,
-                                        Color.randomColor(COLOR_SNAKE_RANGE[0], COLOR_SNAKE_RANGE[1])))
+            # field.addSnakeToField(Snake([(w, h+k) for k in range(7)], BrainSimpleNN(SNAKE_VIEW_RADIUS, model), Direction.UP,
+            #                             Color.randomColor(COLOR_SNAKE_RANGE[0], COLOR_SNAKE_RANGE[1])))
 
             # field.addSnakeToField(Snake([(w, h+k) for k in range(7)], BrainBase(SNAKE_VIEW_RADIUS), Direction.UP,
             #                             Color.randomColor(COLOR_SNAKE_RANGE[0], COLOR_SNAKE_RANGE[1])))
+
+
+            field.addSnakeToField(Snake([(w, h+k) for k in range(7)], BrainPathFind(SNAKE_VIEW_RADIUS), Direction.UP,
+                                        Color.randomColor(COLOR_SNAKE_RANGE[0], COLOR_SNAKE_RANGE[1])))
+
             w += 5
         h += 15
 

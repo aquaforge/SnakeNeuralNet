@@ -1,7 +1,6 @@
 from random import randint
 from Color import COLOR_EMPTY, COLOR_FOOD, COLOR_WALL
 from Enums.PointType import PointType
-# from Food import Food
 from Snake import Snake
 
 

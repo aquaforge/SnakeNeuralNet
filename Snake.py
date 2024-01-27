@@ -1,14 +1,9 @@
-from random import randint
 import numpy as np
-from BrainBase import BrainBase
-from SimpleNN import SimpleNN
+from Brains.BrainBase import BrainBase
 from Color import COLOR_EMPTY, Color
 from Enums.Direction import Direction
 from Enums.MoveDirection import MoveDirection
 from Enums.PointType import PointType
-# from Field import Field
-# from Food import Food
-# from collections import deque
 
 
 HEALTH_STEP = 1.0
@@ -137,7 +132,7 @@ class Snake:
 
     def getHeadView(self, getPointType, asPointType: bool = False) -> np.array:
         view = np.full((2*self._brain.viewRadius+1, 2 *
-                       self._brain.viewRadius+1), PointType.EMPTY if asPointType else 0.0)
+                       self._brain.viewRadius+1), PointType.EMPTY if asPointType else 0)
         head = self.head
         viewRadius = self._brain.viewRadius
         for x in range(view.shape[1]):

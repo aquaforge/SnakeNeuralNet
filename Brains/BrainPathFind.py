@@ -17,6 +17,7 @@ class BrainPathFind (BrainBase):
         elif view[self._viewRadius+1, self._viewRadius] != -1:
             return MoveDirection.RIGHT
         else:
+            print(view.T)
             return MoveDirection.STAY
 
     def getDirection(self, view: np.array) -> MoveDirection:
@@ -43,23 +44,22 @@ class BrainPathFind (BrainBase):
                     stepCounter += 1
                     for i, j in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
                         n = (p[0]+i, p[1]+j)
-                        if pf[n[0], n[1]]+1 == pf[p[0], p[1]]:
-                            path = [n[::-1]]+path
-                            p = n
-                            break
+                        if 0<=n[0]<pf.shape[0] and 0<=n[1]<pf.shape[1]:
+                            if pf[n[0], n[1]]+1 == pf[p[0], p[1]]:
+                                path = [n[::-1]]+path
+                                p = n
+                                break
                 print(path)
                 if len(path) == 1:
                     path
                     # raise
-                p1, p2 = path[0], path[1]
-                if p1[0] < p2[0]:
-                    return MoveDirection.STAY
-                elif p1[0] > p2[0]:
-                    return MoveDirection.FORWARD
-                elif p1[1] < p2[1]:
+                (i1,j1), (i2,j2) = path[0], path[1]
+                if i1 < i2:
                     return MoveDirection.RIGHT
-                elif p1[1] > p2[1]:
+                elif i1 > i2:
                     return MoveDirection.LEFT
+                elif j1 > j2:
+                    return MoveDirection.FORWARD
                 else:
                     return MoveDirection.STAY
 

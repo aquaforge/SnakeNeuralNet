@@ -17,7 +17,6 @@ class BrainPathFind (BrainBase):
         elif view[self._viewRadius+1, self._viewRadius] != -1:
             return MoveDirection.RIGHT
         else:
-            print(view.T)
             return MoveDirection.STAY
 
     def getDirection(self, view: np.array) -> MoveDirection:

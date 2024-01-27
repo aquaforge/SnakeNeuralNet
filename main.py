@@ -33,6 +33,8 @@ SCREEN_HEIGHT = 900
 STEP_DELAY_MS = 100
 
 running: bool = True
+paused: bool = False
+field = None
 
 
 def calculations(root: Tk, field: Field, fieldScene: FieldScene):
@@ -41,7 +43,8 @@ def calculations(root: Tk, field: Field, fieldScene: FieldScene):
         running = False
     else:
         start = datetime.now()
-        field.doOneStep()
+        if not paused:
+            field.doOneStep()
         end = datetime.now()
         d = int(STEP_DELAY_MS-1000*(end - start).total_seconds())
         # print(d)
@@ -50,10 +53,24 @@ def calculations(root: Tk, field: Field, fieldScene: FieldScene):
                    calculations, root, field, fieldScene)
 
 
+def onWindowKeyPress(e):
+    global paused
+    # print ("pressed", repr(e.char))
+    if e.char == ' ':
+        paused = not paused
+
+
+def onCanvasFieldClick(e):
+    p = (e.x//CANVAS_BLOCK_SIZE, e.y//CANVAS_BLOCK_SIZE)
+    field.selectSnakeByPoint(p)
+
+
 def main():
     global running
+    global field
 
     root = Tk()
+    root.bind('<Key>', onWindowKeyPress)
     root.geometry("1000x800+100+100")
 
     frameLeft = ttk.Frame(master=root, borderwidth=1,
@@ -61,8 +78,8 @@ def main():
     frameLeft.pack(side=LEFT, fill=Y, padx=2, pady=2)
     label = ttk.Label(frameLeft, text="Snake Head View")
     label.pack(anchor=NW)
-    canvasHead = Canvas(master=frameLeft, width=(2*SNAKE_VIEW_RADIUS+1)*CANVAS_BLOCK_SIZE,
-                        height=(2*SNAKE_VIEW_RADIUS+1)*CANVAS_BLOCK_SIZE, bg=COLOR_EMPTY.toHTMLColor)
+    canvasHead = Canvas(master=frameLeft, width=(2*SNAKE_VIEW_RADIUS+1)*15,
+                        height=(2*SNAKE_VIEW_RADIUS+1)*15, bg=COLOR_EMPTY.toHTMLColor)
     canvasHead.pack(anchor=NW)
 
     frameRight = ttk.Frame(master=root, borderwidth=1, relief=SOLID)
@@ -82,6 +99,7 @@ def main():
     v.grid(column=1, row=0, sticky=(N, S))
     frameRight.grid_columnconfigure(0, weight=1)
     frameRight.grid_rowconfigure(0, weight=1)
+    canvasField.bind("<Button-1>", onCanvasFieldClick)
 
     field = Field(FIELD_WIDTH, FIELD_HEIGHT)
 
@@ -96,12 +114,13 @@ def main():
             model.add(len(MoveDirection), activation="softmax")
 
             field.addSnakeToField(Snake([(w, h+k) for k in range(7)], BrainSimpleNN(SNAKE_VIEW_RADIUS, model), Direction.UP,
-                                   Color.randomColor(COLOR_SNAKE_RANGE[0], COLOR_SNAKE_RANGE[1])))
+                                        Color.randomColor(COLOR_SNAKE_RANGE[0], COLOR_SNAKE_RANGE[1])))
             w += 5
         h += 15
 
     field.addFood()
-    fieldScene = FieldScene(field, CANVAS_BLOCK_SIZE, root, canvasField, canvasHead)
+    fieldScene = FieldScene(field, CANVAS_BLOCK_SIZE,
+                            root, canvasField, canvasHead)
 
     # th = Thread(name="calculation", target=calculations,                daemon=True, args=(field, fieldScene))
     # th.start()

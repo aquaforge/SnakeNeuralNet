@@ -6,6 +6,7 @@ from Snake import Snake
 
 
 class Field:
+
     def __init__(self, width: int, height: int):
         self._width = width  # это слева направо
         self._height = height  # это сверху вниз
@@ -16,9 +17,25 @@ class Field:
         self._snakes = set()
         self._age = 0
         self._needRedraw = True
+        self.__selectedSnake = None
 
         self.__fieldData = [[(PointType.EMPTY, COLOR_EMPTY.toHTMLColor) for h in range(
             height)] for w in range(width)]
+
+    def selectSnakeByPoint(self, p: tuple):
+        for snake in self._snakes:
+            if snake.pointIsInSnake(p):
+                self.selectedSnake = snake
+                return
+        self.selectedSnake = None
+
+    @property
+    def selectedSnake(self): return self.__selectedSnake
+
+    @selectedSnake.setter
+    def selectedSnake(self, snake: Snake):
+        self.__selectedSnake = snake
+        self._needRedraw = True
 
     def pointInField(self, p: tuple) -> bool:
         return 0 <= p[0] < self._width and 0 <= p[1] < self._height
@@ -64,9 +81,6 @@ class Field:
     def foodCount(self): return self._foodCount
 
     @property
-    def selectedSnake(self): return self._selectedSnake
-
-    @property
     def width(self): return self._width
 
     @property
@@ -98,6 +112,12 @@ class Field:
             not snake.alive or snake.len == 0))
         if len(deletedSnakes) > 0:
             self._snakes -= deletedSnakes
+
+        if self.selectedSnake == None or self.selectedSnake not in self._snakes:
+            for sn in self._snakes:
+                self.selectedSnake = sn
+                break
+
         self.addFood()
 
     def addFood(self):
@@ -121,4 +141,4 @@ class Field:
                 self.setPoint(p, PointType.SNAKE, snake.getColorByBodyId(i))
 
             self._snakes.add(snake)
-            Snake.selectedSnake = snake
+            self.selectedSnake = snake

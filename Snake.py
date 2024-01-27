@@ -13,7 +13,7 @@ from Enums.PointType import PointType
 
 HEALTH_STEP = 1.0
 HEALTH_TAIL = 20.0
-TAIL_MIN_LENTH = 3
+TAIL_MIN_LENTH = 2
 TAIL_MAX_LENTH = 16
 
 

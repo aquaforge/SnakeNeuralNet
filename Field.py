@@ -114,12 +114,16 @@ class Field:
         if len(deletedSnakes) > 0:
             self._snakes -= deletedSnakes
 
-        if self.selectedSnake == None or self.selectedSnake not in self._snakes:
-            for sn in self._snakes:
+        self.addFood()
+
+        if self.selectedSnake == None or self.selectedSnake not in self._snakes or not self.selectedSnake.alive or self.selectedSnake.len == 0:
+            self.__setSelectedRandom()
+
+    def __setSelectedRandom(self):
+        for sn in self._snakes:
+            if sn.alive and sn.len > 0:
                 self.selectedSnake = sn
                 break
-
-        self.addFood()
 
     def addFood(self):
         c = COLOR_FOOD.toHTMLColor

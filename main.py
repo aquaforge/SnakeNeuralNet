@@ -25,32 +25,71 @@ FIELD_WIDTH = 50
 FIELD_HEIGHT = 35
 CANVAS_BLOCK_SIZE = 15
 
-SNAKE_VIEW_RADIUS = 2
+SNAKE_VIEW_RADIUS = 3
 
 SCREEN_WIDTH = 1600
 SCREEN_HEIGHT = 900
 
-STEP_DELAY_MS = 100
+STEP_DELAY_MS = 10
 
 running: bool = True
 paused: bool = False
 field = None
+fieldScene = None
 
 
-def calculations(root: Tk, field: Field, fieldScene: FieldScene):
+def initializeAll(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo: Text):
     global running
-    if running and len(field.snakes) == 0:
-        running = False
+    global field
+    global fieldScene
+    global paused
+
+    field = Field(FIELD_WIDTH, FIELD_HEIGHT)
+    h = 2
+    while h+15 < FIELD_HEIGHT:
+        w = 2
+        while w+5 < FIELD_WIDTH:
+            # здоровье+длина + массив (2*SNAKE_VIEW_RADIUS+1)^2 для взгляда занято\пусто\еда
+            model = SimpleNN((2*SNAKE_VIEW_RADIUS+1)**2)
+            model.add(10, activation="relu", use_bias=True)
+            # model.add(len(MoveDirection)+1, activation="relu", use_bias=False)
+            model.add(len(MoveDirection), activation="softmax")
+
+            field.addSnakeToField(Snake([(w, h+k) for k in range(7)], BrainSimpleNN(SNAKE_VIEW_RADIUS, model), Direction.UP,
+                                        Color.randomColor(COLOR_SNAKE_RANGE[0], COLOR_SNAKE_RANGE[1])))
+            w += 5
+        h += 15
+
+    field.addFood()
+    fieldScene = FieldScene(field, CANVAS_BLOCK_SIZE,
+                            root, canvasField, canvasHead, snakeInfo)
+
+    fieldScene.drawAll()
+    root.after(500, calculateOne, root, canvasField,  canvasHead, snakeInfo)
+
+
+def calculateOne(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo: Text):
+    global running
+    global field
+    global fieldScene
+    global paused
+
+    if not running:
+        return
+    if len(field.snakes) == 0:
+        initializeAll(root, canvasField,  canvasHead, snakeInfo)
     else:
         start = datetime.now()
+        if field.age == 1000:
+            paused = True
         if not paused:
             field.doOneStep()
         end = datetime.now()
         d = int(STEP_DELAY_MS-1000*(end - start).total_seconds())
         # print(d)
         fieldScene.drawAll()
-        root.after(d if d > 0 else STEP_DELAY_MS,
-                   calculations, root, field, fieldScene)
+        root.after(d if d > 0 else STEP_DELAY_MS, calculateOne,
+                   root, canvasField,  canvasHead, snakeInfo)
 
 
 def onWindowKeyPress(e):
@@ -87,7 +126,7 @@ def main():
     canvasHead.grid(row=2, column=1)
 
     frameLeft.grid_columnconfigure(0, weight=1)
-    frameLeft.grid_rowconfigure(0, weight=1)    
+    frameLeft.grid_rowconfigure(0, weight=1)
 
     frameRight = ttk.Frame(master=root, borderwidth=1, relief=SOLID)
     frameRight.pack(fill=BOTH, expand=True,  padx=2, pady=2)
@@ -108,32 +147,7 @@ def main():
     frameRight.grid_rowconfigure(0, weight=1)
     canvasField.bind("<Button-1>", onCanvasFieldClick)
 
-    field = Field(FIELD_WIDTH, FIELD_HEIGHT)
-
-    h = 2
-    while h+15 < FIELD_HEIGHT:
-        w = 2
-        while w+5 < FIELD_WIDTH:
-            # здоровье+длина + массив (2*SNAKE_VIEW_RADIUS+1)^2 для взгляда занято\пусто\еда
-            model = SimpleNN((2*SNAKE_VIEW_RADIUS+1)**2)
-            model.add(10, activation="relu", use_bias=True)
-            # model.add(len(MoveDirection)+1, activation="relu", use_bias=False)
-            model.add(len(MoveDirection), activation="softmax")
-
-            field.addSnakeToField(Snake([(w, h+k) for k in range(7)], BrainSimpleNN(SNAKE_VIEW_RADIUS, model), Direction.UP,
-                                        Color.randomColor(COLOR_SNAKE_RANGE[0], COLOR_SNAKE_RANGE[1])))
-            w += 5
-        h += 15
-
-    field.addFood()
-    fieldScene = FieldScene(field, CANVAS_BLOCK_SIZE,
-                            root, canvasField, canvasHead, snakeInfo)
-
-    # th = Thread(name="calculation", target=calculations,                daemon=True, args=(field, fieldScene))
-    # th.start()
-
-    fieldScene.drawAll()
-    root.after(100, calculations, root, field, fieldScene)
+    initializeAll(root, canvasField,  canvasHead, snakeInfo)
 
     root.update_idletasks()
     root.mainloop()

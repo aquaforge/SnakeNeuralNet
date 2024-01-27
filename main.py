@@ -16,11 +16,11 @@ from FieldScene import FieldScene
 
 # https://ru.hexlet.io/blog/posts/19-bibliotek-dlya-python?ysclid=lrus9b9ejh622626382
 
-FIELD_WIDTH = 80
-FIELD_HEIGHT = 50
+FIELD_WIDTH = 50
+FIELD_HEIGHT = 45
 CANVAS_BLOCK_SIZE = 15
 
-SNAKE_VIEW_RADIUS = 3
+SNAKE_VIEW_RADIUS = 4
 
 SCREEN_WIDTH = 1600
 SCREEN_HEIGHT = 900
@@ -56,7 +56,6 @@ def initializeAll(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo:
             # field.addSnakeToField(Snake([(w, h+k) for k in range(7)], BrainBase(SNAKE_VIEW_RADIUS), Direction.UP,
             #                             Color.randomColor(COLOR_SNAKE_RANGE[0], COLOR_SNAKE_RANGE[1])))
 
-
             field.addSnakeToField(Snake([(w, h+k) for k in range(7)], BrainPathFind(SNAKE_VIEW_RADIUS), Direction.UP,
                                         Color.randomColor(COLOR_SNAKE_RANGE[0], COLOR_SNAKE_RANGE[1])))
 
@@ -83,8 +82,6 @@ def calculateOne(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo: 
         initializeAll(root, canvasField,  canvasHead, snakeInfo)
     else:
         start = datetime.now()
-        if field.age == 1000:
-            paused = True
         if not paused:
             field.doOneStep()
         end = datetime.now()

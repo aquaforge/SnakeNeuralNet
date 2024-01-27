@@ -81,7 +81,7 @@ class FieldScene(object):
         if not snake.alive or snake.len == 0:
             return
 
-        self._snakeInfo.insert(1.0, snake.headViewDirection)
+        self._snakeInfo.insert(1.0, str(snake.headViewDirection) + "\n" + str(snake.len))
 
         view = snake.getHeadView(self._field.getPointType, asPointType=True)
         colorEmpty = COLOR_EMPTY.toHTMLColor

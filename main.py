@@ -13,6 +13,7 @@ from FieldScene import FieldScene
 
 # pip freeze > requirements.txt
 # pip install -r requirements.txt
+# https://metanit.com/python/database/3.1.php
 
 # https://ru.hexlet.io/blog/posts/19-bibliotek-dlya-python?ysclid=lrus9b9ejh622626382
 

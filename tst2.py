@@ -14,7 +14,7 @@ nn = SimpleNN(layers=l, learningRate=0.01)
 inp=np.random.random(size=(5,1))
 o1 = nn.predict(inp)
 i1=nn.info()
-print(o1, i1)
+print(o1)
 
 s = nn.encode()
 newNN =  SimpleNN.decode(s)

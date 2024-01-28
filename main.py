@@ -39,7 +39,7 @@ running: bool = True
 paused: bool = False
 field = None
 fieldScene = None
-epochCount=0
+epochCount = 0
 
 
 def initializeAll(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo: Text):
@@ -49,7 +49,7 @@ def initializeAll(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo:
     global paused
     global epochCount
 
-    epochCount+=1
+    epochCount += 1
 
     field = Field(FIELD_WIDTH, FIELD_HEIGHT)
     h = 2
@@ -91,11 +91,13 @@ def calculateOne(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo: 
 
     if not running:
         return
-    if len(field.snakes) == 0 or field.age > 500:
-        dbo=DbPathData()
-        countDB =  dbo.countTable(PathDataInfo)
-        dbo=None
-        print(f"epoch={epochCount}",f"DB={countDB}","  ".join([f"{k}=\"{v}\"" for k,v in field.getAverageRank()]))
+    if len(field.snakes) == 0 or field.age > 1000:
+        dbo = DbPathData()
+        countDB = dbo.countTable(PathDataInfo)
+        dbo = None
+        # pathfind 3="5.49"  4="6.59"  5="6.69"  6="7.81"  7="8.83"  8="7.19"  9="7.29"
+        print(f"epoch={epochCount}", f"DB={countDB}", "  ".join(
+            [f"{k}=\"{v}\"" for k, v in field.getAverageRank()]))
         initializeAll(root, canvasField,  canvasHead, snakeInfo)
     else:
         start = datetime.now()

@@ -18,7 +18,7 @@ TAIL_MAX_LENTH = 16
 class Snake:
     mapDirectionArrows = {Direction.UP: (0, -1),   Direction.DOWN: (0, 1),
                           Direction.LEFT: (-1, 0), Direction.RIGHT: (1, 0)}
-    pathData = []
+    pathData = dict()
 
     def __init__(self, body: list, brain: BrainBase, headViewDirection: Direction, color: Color = Color.randomColor(100, 200),  health: float = 100.0):
 
@@ -50,7 +50,6 @@ class Snake:
 
     @property
     def countEat(self): return self._countEat
-
 
     @property
     def rankPersent(self) -> float:
@@ -120,15 +119,22 @@ class Snake:
             # print (view.T)
             str = json.dumps(view.T, cls=NumpyArrayEncoder).replace(" ", "")
             # print (b)
-            Snake.pathData.append({"path": str, "result": int(
-                action), "viewSize": self._brain.viewRadius, "hasFood": (int(PointType.FOOD) in view)})
+            Snake.pathData[str] = {"path": str, "result": int(
+                action), "viewSize": self._brain.viewRadius, "hasFood": (int(PointType.FOOD) in view)}
 
             if len(Snake.pathData) > 1000:
-                self._saveToDB()
+                l=list(Snake.pathData.values()).copy()
+                Snake.pathData = dict()
+                self._saveToDB(l)
 
         self._move(action, getPointType, setPoint)
         if len(self._body) >= TAIL_MAX_LENTH:
             self._giveBirth(setPoint, addSnakeToField)
+
+    def _saveToDB(self, s):
+        dbo = DbPathData()
+        dbo.addBulk(s)
+        print(f"В БД: {dbo.getCountRows()}")
 
     def _move(self, action: MoveDirection, getPointType, setPoint):
         if (not self._alive or self.len == 0 or action == MoveDirection.STAY):
@@ -185,9 +191,3 @@ class Snake:
             self._removeTail(setPoint)
         # addSnakeToField(
         #     Snake(body, self._brain, Direction.UP, self.color.darker(0.9)))
-
-    def _saveToDB(self):
-        dbo = DbPathData()
-        dbo.addBulk(Snake.pathData)
-        print(f"В БД: {dbo.getCountRows()}")
-        Snake.pathData = []

@@ -1,29 +1,36 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Session
-from sqlalchemy import  Column, Integer, String
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.dialects.sqlite import insert as sqlite_upsert
-  
+
 # https://metanit.com/python/database/3.3.php
 
-#https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html
+# https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html
 
-class Base(DeclarativeBase): pass
+
+class Base(DeclarativeBase):
+    pass
+
+
 class PathDataInfo(Base):
     __tablename__ = "PathDataInfo"
     path = Column(String, primary_key=True, index=True)
-    result = Column(Integer, nullable = False)
-    viewSize = Column(Integer, nullable = False)
-    hasFood = Column(Integer, nullable = False)
+    result = Column(Integer, nullable=False)
+    viewSize = Column(Integer, nullable=False)
+    hasFood = Column(Integer, nullable=False)
+
 
 class DbPathData():
     # строка подключения
     sqlite_database = "sqlite:///PathData.db"
 
-    def __init__(self):    
+    def __init__(self):
         self._engine = create_engine(DbPathData.sqlite_database, echo=False)
         Base.metadata.create_all(bind=self._engine)
- 
+
+    def __del__(self):
+        self._engine.dispose()
 
     def addBulk(self, pathData):
         with Session(autoflush=False, bind=self._engine) as db:
@@ -37,10 +44,11 @@ class DbPathData():
 # ...         {"name": "squidward", "fullname": "Squidward Tentacles"},
 # ...         {"name": "ehkrabs", "fullname": "Eugene H. Krabs"},
 # ...     ]
-            stmt = stmt.on_conflict_do_nothing(index_elements=[PathDataInfo.path])
+            stmt = stmt.on_conflict_do_nothing(
+                index_elements=[PathDataInfo.path])
             db.execute(stmt)
             db.commit()
 
-    def getCountRows(self)            :
+    def getCountRows(self):
         with Session(autoflush=False, bind=self._engine) as db:
             return db.query(PathDataInfo).count()

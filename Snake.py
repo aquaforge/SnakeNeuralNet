@@ -56,7 +56,7 @@ class Snake:
         if self._age == 0:
             return 0
         else:
-            return round(100.0 * self._countEat/self._age, 2)
+            return round(100.0 * self._countEat/self._age, 4)
 
     @property
     def health(self) -> float: return self._health
@@ -122,19 +122,10 @@ class Snake:
             Snake.pathData[str] = {"path": str, "result": int(
                 action), "viewSize": self._brain.viewRadius, "hasFood": (int(PointType.FOOD) in view)}
 
-            if len(Snake.pathData) > 1000:
-                l=list(Snake.pathData.values()).copy()
-                Snake.pathData = dict()
-                self._saveToDB(l)
-
         self._move(action, getPointType, setPoint)
         if len(self._body) >= TAIL_MAX_LENTH:
             self._giveBirth(setPoint, addSnakeToField)
 
-    def _saveToDB(self, s):
-        dbo = DbPathData()
-        dbo.addBulk(s)
-        print(f"В БД: {dbo.getCountRows()}")
 
     def _move(self, action: MoveDirection, getPointType, setPoint):
         if (not self._alive or self.len == 0 or action == MoveDirection.STAY):
@@ -185,6 +176,7 @@ class Snake:
     def _giveBirth(self, setPoint, addSnakeToField):
         if not self.alive or len(self._body) < TAIL_MAX_LENTH:
             return
+        
         self._countGiveBirth += 1
         body = self._body[-1:TAIL_MAX_LENTH//2-1:-1]
         for i in range(TAIL_MAX_LENTH//2):

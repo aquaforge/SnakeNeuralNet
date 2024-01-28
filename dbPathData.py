@@ -30,25 +30,27 @@ class DbPathData():
         Base.metadata.create_all(bind=self._engine)
 
     def __del__(self):
-        self._engine.dispose()
+        if self._engine is not None:
+            self._engine.dispose()
 
     def addBulk(self, pathData):
         with Session(autoflush=False, bind=self._engine) as db:
             # pd = db.query(PathDataInfo).all()
 
-            stmt = sqlite_upsert(PathDataInfo).values(pathData)
-# ...     [
-# ...         {"name": "spongebob", "fullname": "Spongebob Squarepants"},
-# ...         {"name": "sandy", "fullname": "Sandy Cheeks"},
-# ...         {"name": "patrick", "fullname": "Patrick Star"},
-# ...         {"name": "squidward", "fullname": "Squidward Tentacles"},
-# ...         {"name": "ehkrabs", "fullname": "Eugene H. Krabs"},
-# ...     ]
-            stmt = stmt.on_conflict_do_nothing(
-                index_elements=[PathDataInfo.path])
-            db.execute(stmt)
-            db.commit()
+            # a = self.countTable(db, PathDataInfo)
+            insertSize = 300
+            lsts = [pathData[i:i + insertSize]
+                    for i in range(0, len(pathData), insertSize)]
 
-    def getCountRows(self):
-        with Session(autoflush=False, bind=self._engine) as db:
-            return db.query(PathDataInfo).count()
+            for l in lsts:
+                stmt = sqlite_upsert(PathDataInfo).values(l)
+                stmt = stmt.on_conflict_do_nothing(
+                    index_elements=[PathDataInfo.path])
+                db.execute(stmt)
+            db.commit()
+            # b=self.countTable(PathDataInfo)
+            # print(f"db: all:{b} add:{b-a} input:{len(pathData)}")
+        
+    def countTable(self, tableClass: Base)->int:
+        with Session(autoflush=False, bind=self._engine) as db:        
+            return db.query(tableClass).count()

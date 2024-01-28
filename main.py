@@ -11,6 +11,7 @@ from Color import COLOR_EMPTY, COLOR_SNAKE_RANGE, Color
 from Snake import Snake
 from Field import Field
 from FieldScene import FieldScene
+from dbPathData import DbPathData, PathDataInfo
 
 # pip freeze > requirements.txt
 # pip install -r requirements.txt
@@ -38,6 +39,7 @@ running: bool = True
 paused: bool = False
 field = None
 fieldScene = None
+epochCount=0
 
 
 def initializeAll(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo: Text):
@@ -45,6 +47,9 @@ def initializeAll(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo:
     global field
     global fieldScene
     global paused
+    global epochCount
+
+    epochCount+=1
 
     field = Field(FIELD_WIDTH, FIELD_HEIGHT)
     h = 2
@@ -82,10 +87,15 @@ def calculateOne(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo: 
     global field
     global fieldScene
     global paused
+    global epochCount
 
     if not running:
         return
-    if len(field.snakes) == 0 or field.age > 1000:
+    if len(field.snakes) == 0 or field.age > 500:
+        dbo=DbPathData()
+        countDB =  dbo.countTable(PathDataInfo)
+        dbo=None
+        print(f"epoch={epochCount}",f"DB={countDB}","  ".join([f"{k}=\"{v}\"" for k,v in field.getAverageRank()]))
         initializeAll(root, canvasField,  canvasHead, snakeInfo)
     else:
         start = datetime.now()

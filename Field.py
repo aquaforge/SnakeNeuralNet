@@ -1,4 +1,5 @@
 from random import randint
+from statistics import mean
 from Color import COLOR_EMPTY, COLOR_FOOD, COLOR_WALL
 from Enums.PointType import PointType
 from Snake import Snake
@@ -115,6 +116,23 @@ class Field:
             self._snakes -= deletedSnakes
 
         self.addFood()
+
+        if len(Snake.pathData) > 1000:
+            l = list(Snake.pathData.values()).copy()
+            Snake.pathData = dict()
+            self._saveToDB(l)
+
+    def _saveToDB(self, s):
+        dbo = DbPathData()
+        dbo.addBulk(s)
+
+    def getAverageRank(self) -> list:
+        r = dict()
+        for i in range(2, 10):
+            l = [sn.rankPersent for sn in self._snakes if sn.viewRadius == i]
+            if len(l) > 0:
+                r[i]=round(mean(l), 2)
+        return sorted(r.items(), key=lambda item: item[0])
 
     def __del__(self):
         # self._saveToDB()

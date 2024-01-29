@@ -1,26 +1,31 @@
 import numpy as np
-from SimpleNN import ActivationRelu, ActivationSigmoid, Layer, SimpleNN, ActivationSoftmax
-from NumpyArrayEncoder import NumpyArrayEncoder
+from SimpleNN import ActivationNone, ActivationRelu, ActivationSigmoid, Layer, SimpleNN
 import json
 import pprint
 
 
 l = list()
-l.append(Layer(nodesCount=5))
+l.append(Layer(nodesCount=1))
 l.append(Layer(nodesCount=3, activationClass=ActivationRelu, useBias=True))
-l.append(Layer(nodesCount=4, activationClass=ActivationRelu, useBias=False))
+l.append(Layer(nodesCount=1, activationClass=ActivationNone, useBias=False))
 nn = SimpleNN(layers=l, learningRate=0.01)
 
-inp=np.random.random(size=(5,1))
-o1 = nn.predict(inp)
-i1=nn.info()
-print(o1)
+y=np.random.random(size=(1,1))
+o = nn.predict(y)
+print(y, o)
 
-s = nn.encode()
-newNN =  SimpleNN.decode(s)
-o2 = newNN.predict(inp)
-i2=newNN.info()
-print(o2)
+for i in range(10000):
+    inp=2*np.random.random(size=(1,1))
+    nn.train(inp, -inp)
+
+o = nn.predict(y)
+print(y, o)
+
+# s = nn.encode()
+# newNN =  SimpleNN.decode(s)
+# o2 = newNN.predict(inp)
+# i2=newNN.info()
+# print(o2)
 
 
 # print(isinstance(ActivationRelu(), ActivationRelu))

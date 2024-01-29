@@ -33,7 +33,7 @@ class ActivationRelu():
 
     @staticmethod
     def derivative(x):
-        return np.greater(x, 0).astype(int)
+        return np.greater(x, 0).astype(int).astype(float)
 
 
 class ActivationNone():
@@ -43,7 +43,7 @@ class ActivationNone():
 
     @staticmethod
     def derivative(x):
-        return 1
+        return 1.0
 
 '''
 class ActivationSoftmax():  # https://eli.thegreenplace.net/2016/the-softmax-function-and-its-derivative/
@@ -121,7 +121,7 @@ class SimpleNN:
         inputVector = np.array(inputVector).reshape(self._layers[0].nodesCount, 1)
         targetVector = np.array(targetVector).reshape(self._layers[-1].nodesCount, 1)        
 
-        for i in range(len(self._layers),0,-1):
+        for i in range(len(self._layers)-1,0,-1):
             if i==len(self._layers)-1:
                 errors = targetVector - self.predict(inputVector)
             else:
@@ -134,7 +134,9 @@ class SimpleNN:
         for i in range(1,len(self._layers)):
             if self._layers[i].useBias:
                 self._layers[i].bias += self._layers[i].gradients
-            self._layers[i].weights+=np.dot(self._layers[i].gradients*self._layers[i].valActivated.T)
+            a=self._layers[i].gradients
+            b=self._layers[i-1].valActivated.T
+            self._layers[i].weights+=np.dot(a,b)
 
     def encode(self) -> dict:
         self.clearTemp()

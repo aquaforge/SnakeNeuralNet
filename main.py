@@ -11,7 +11,8 @@ from Color import COLOR_EMPTY, COLOR_SNAKE_RANGE, Color
 from Snake import Snake
 from Field import Field
 from FieldScene import FieldScene
-from dbPathData import DbPathData, PathDataInfo
+from DbTrainData import TrainData, DbTrainData
+
 
 # pip freeze > requirements.txt
 # pip install -r requirements.txt
@@ -132,9 +133,10 @@ def calculateOne(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo: 
 
     if not running:
         return
-    if len(field.snakes) == 0 or field.age > 500:
-        dbo = DbPathData()
-        countDB = dbo.countTable(PathDataInfo)
+    if len(field.snakes) == 0 or field.age > 1000:
+        dbo = DbTrainData()
+        countDB = dbo.countTable(TrainData)
+
         dbo = None
         # pathfind 3="5.49"  4="6.59"  5="6.69"  6="7.81"  7="8.83"  8="7.19"  9="7.29"
         print(f"epoch={epochCount}", f"DB={countDB}", "  ".join(

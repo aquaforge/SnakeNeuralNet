@@ -3,7 +3,7 @@ from statistics import mean
 from Color import COLOR_EMPTY, COLOR_FOOD, COLOR_WALL
 from Enums.PointType import PointType
 from Snake import Snake
-from dbPathData import DbPathData
+from DbTrainData import DbTrainData
 
 
 class Field:
@@ -122,9 +122,9 @@ class Field:
             Snake.pathData = dict()
             self._saveToDB(l)
 
-    def _saveToDB(self, s):
-        dbo = DbPathData()
-        dbo.addBulk(s)
+    def _saveToDB(self, l):
+        dbo = DbTrainData()
+        dbo.addBulkTrainData(l)
 
     def getAverageRank(self) -> list:
         r = dict()

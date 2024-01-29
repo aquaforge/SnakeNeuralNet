@@ -6,7 +6,7 @@ from Enums.Direction import Direction
 from Enums.MoveDirection import MoveDirection
 from Enums.PointType import PointType
 from NumpyArrayEncoder import NumpyArrayEncoder
-from dbPathData import DbPathData
+from DbTrainData import DbTrainData
 
 
 HEALTH_STEP = 1.0

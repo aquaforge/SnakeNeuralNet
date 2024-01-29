@@ -29,11 +29,11 @@ class BrainAi(Base):
     weigth = Column(String,  nullable=False)
     data = Column(String, nullable=False)
     numTrainings = Column(Integer, nullable=False)
-    totalAge = Column(Integer, nullable=False,  default=0)
-    eatCount = Column(Integer, nullable=False,  default=0, index=True)
-    createdOn = Column(DateTime(), nullable=False, default=func.now())
+    totalAge = Column(Integer, nullable=False,  server_default="0")
+    eatCount = Column(Integer, nullable=False,  server_default="0", index=True)
+    createdOn = Column(DateTime(), nullable=False, server_default=func.now())
     updatedOn = Column(DateTime(), nullable=False,
-                       default=func.now(),  server_onupdate=func.now())
+                       server_default=func.now(),  server_onupdate=func.now())
 
     __table_args__ = (
         UniqueConstraint(config, weigth),
@@ -41,8 +41,7 @@ class BrainAi(Base):
 
 
 class DbTrainData():
-    # строка подключения
-    sqlite_database = "sqlite:///TrainData.db"
+    sqlite_database = "sqlite:///_TrainData.db"
 
     def __init__(self):
         self._engine = create_engine(DbTrainData.sqlite_database, echo=False)

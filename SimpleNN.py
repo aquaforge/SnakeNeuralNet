@@ -171,3 +171,42 @@ class SimpleNN:
     def decode(data: str):
         return jsonpickle.decode(data)
     
+
+'''
+    def train(self, input_array, target_array):
+        inputs = np.array(input_array).reshape(self.input_nodes, 1)
+        targets = np.array(target_array).reshape(self.output_nodes, 1)
+
+        hidden = np.dot(self.weights_ih, inputs) + self.bias_h
+        hidden = self.sigmoid(hidden)
+
+        outputs = np.dot(self.weights_ho, hidden) + self.bias_o
+        outputs = self.sigmoid(outputs)
+
+        output_errors = targets - outputs
+        output_gradients = self.sigmoid_derivative(outputs)
+        output_gradients *= output_errors
+        output_gradients *= self.learning_rate
+
+        hidden_errors = np.dot(self.weights_ho.T, output_errors)
+        hidden_gradients = self.sigmoid_derivative(hidden)
+        hidden_gradients *= hidden_errors
+        hidden_gradients *= self.learning_rate
+
+        self.weights_ih += np.dot(hidden_gradients, inputs.T)
+        self.bias_h += hidden_gradients
+        self.weights_ho += np.dot(output_gradients, hidden.T)
+        self.bias_o += output_gradients
+
+    def predict(self, input_array):
+        inputs = np.array(input_array).reshape(self.input_nodes, 1)
+
+        hidden = np.dot(self.weights_ih, inputs) + self.bias_h
+        hidden = self.sigmoid(hidden)
+
+        outputs = np.dot(self.weights_ho, hidden) + self.bias_o
+        outputs = self.sigmoid(outputs)
+
+        return outputs
+
+'''    

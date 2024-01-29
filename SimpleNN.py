@@ -43,16 +43,15 @@ class ActivationNone():
 
     @staticmethod
     def derivative(x):
-        return 0
+        return 1
 
-
+'''
 class ActivationSoftmax():  # https://eli.thegreenplace.net/2016/the-softmax-function-and-its-derivative/
     @staticmethod
     def activation(x):
-        '''stable version'''
         exps = np.exp(x - np.max(x))
         return exps / np.sum(exps)
-
+'''
 
 @dataclass
 class Layer():
@@ -63,6 +62,7 @@ class Layer():
 
 @dataclass
 class LayerExtended(Layer):
+    bias: np.array = None
     weights: np.array = None
     val: np.array = None
     valActivated: np.array = None
@@ -79,38 +79,33 @@ class SimpleNN:
                 layer.weights = None
                 layer.activation = None
                 w = None
+                b=None
             else:
                 if layer.activationClass == None:
                     layer.activationClass = ActivationNone
-                else:
-                    if i != len(layers)-1:
-                        if isinstance(layer.activationClass, ActivationSoftmax):
-                            raise NotImplemented("Softmax for hidden layer")
-                w = np.random.random(
-                    size=(layer.nodesCount, layers[i-1].nodesCount + (1 if layer.useBias else 0)))
+                w = np.random.random(size=(layer.nodesCount, layers[i-1].nodesCount))
+                b= np.random.random(size=(layer.nodesCount, 1))
             self._layers.append(LayerExtended(nodesCount=layer.nodesCount,
-                                              activationClass=layer.activationClass, useBias=layer.useBias, weights=w))
+                                              activationClass=layer.activationClass, useBias=layer.useBias, bias=b,weights=w))
 
-    def predict(self, inputVector: np.array):
-        # val = np.array(inputVector, ndmin=2).T
+    def predict(self, inputVector):
+        inputVector = np.array(inputVector).reshape(self._layers[0].nodesCount, 1)
         self._layers[0].val = inputVector
         self._layers[0].valActivated = inputVector
         for i in range(1, len(self._layers)):
-            # print(self._layers[i-1].valActivated)
+            val = self._layers[i-1].valActivated
+            val = np.dot(self._layers[i].weights, val)
             if self._layers[i].useBias:
-                val = np.append(self._layers[i-1].valActivated, [[0.99999]], 0)
-                # print(val)
-            else:
-                val = self._layers[i-1].valActivated
-            self._layers[i].val = np.dot(self._layers[i].weights, val)
-            self._layers[i].valActivated = self._layers[i].activationClass.activation(
-                self._layers[i].val)
+                val+=self._layers[i].bias
+            self._layers[i].val=val
+            self._layers[i].valActivated = self._layers[i].activationClass.activation(val)
         return self._layers[-1].valActivated
 
     def clearTemp(self):
         for i in range(1, len(self._layers)):
             self._layers[i].val = None
             self._layers[i].valActivated = None
+            self._layers[i].gradients=None
         return {"learningRate": self._learningRate, "layers": self._layers}
 
     @staticmethod
@@ -122,16 +117,24 @@ class SimpleNN:
         for e in range(epochs):
             pass
 
-    def train(self, inputVector: np.array, targetVector: np.array):
-        # inputs = np.array(inputs_list, ndmin=2).T
-        # targets = np.array(targets_list, ndmin=2).T
-        outputErrors = targetVector - self.predict(inputVector)
+    def train(self, inputVector, targetVector):
+        inputVector = np.array(inputVector).reshape(self._layers[0].nodesCount, 1)
+        targetVector = np.array(targetVector).reshape(self._layers[-1].nodesCount, 1)        
 
-        # hidden_errors = numpy.dot(self.who.T, output_errors)
-        # # update the weights for the links between the hidden and output layers
-        # self.who += self.lr * numpy.dot((output_errors * final_outputs * (1.0 - final_outputs)), numpy.transpose(hidden_outputs))
-        # # update the weights for the links between the input and hidden layers
-        # self.wih += self.lr * numpy.dot((hidden_errors * hidden_outputs * (1.0 - hidden_outputs)), numpy.transpose(inputs))
+        for i in range(len(self._layers),0,-1):
+            if i==len(self._layers)-1:
+                errors = targetVector - self.predict(inputVector)
+            else:
+                errors=np.dot(self._layers[i+1].weights.T, errors)
+            gradients = self._layers[i].activationClass.derivative(self._layers[i].valActivated)
+            gradients*=errors
+            gradients*=self._learningRate
+            self._layers[i].gradients = gradients
+
+        for i in range(1,len(self._layers)):
+            if self._layers[i].useBias:
+                self._layers[i].bias += self._layers[i].gradients
+            self._layers[i].weights+=np.dot(self._layers[i].gradients*self._layers[i].valActivated.T)
 
     def encode(self) -> dict:
         self.clearTemp()
@@ -167,3 +170,4 @@ class SimpleNN:
     @staticmethod
     def decode(data: str):
         return jsonpickle.decode(data)
+    

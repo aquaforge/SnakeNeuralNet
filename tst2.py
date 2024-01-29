@@ -8,7 +8,7 @@ import pprint
 l = list()
 l.append(Layer(nodesCount=5))
 l.append(Layer(nodesCount=3, activationClass=ActivationRelu, useBias=True))
-l.append(Layer(nodesCount=4, activationClass=ActivationSoftmax, useBias=True))
+l.append(Layer(nodesCount=4, activationClass=ActivationRelu, useBias=False))
 nn = SimpleNN(layers=l, learningRate=0.01)
 
 inp=np.random.random(size=(5,1))

@@ -65,8 +65,8 @@ class FieldScene(object):
         self.setCaption()
 
     def setCaption(self):
-        self._root.title(f"Field={self._field.width}x{self._field.height} Snakes={
-            len(self._field.snakes)} Food={self._field.foodCount} Age={self._field.age}")
+        self._root.title(
+            f"Field={self._field.width}x{self._field.height} Snakes={len(self._field.snakes)} Food={self._field.foodCount} Age={self._field.age}")
 
     def _pointToScreenRect(self, p) -> list:
         return (p[0]*self._canvasBlockSize, p[1]*self._canvasBlockSize,
@@ -81,18 +81,16 @@ class FieldScene(object):
         if not snake.alive or snake.len == 0:
             return
 
-        dt={}
+        dt = {}
         dt["radius"] = snake.viewRadius
         dt["head"] = snake.headViewDirection
         dt["len"] = snake.len
         dt["rankPersent"] = snake.rankPersent
         dt["countGiveBirth"] = snake.countGiveBirth
-        s=""
+        s = ""
         for key in dt:
-            s+= f"{key}:{dt[key]}\n"
+            s += f"{key}:{dt[key]}\n"
         self._snakeInfo.insert(1.0, s)
-
-
 
         view = snake.getHeadView(self._field.getPointType, asPointType=True)
         colorEmpty = COLOR_EMPTY.toHTMLColor

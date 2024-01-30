@@ -82,6 +82,7 @@ class FieldScene(object):
             return
 
         dt = {}
+        dt["type"] = type(snake._brain).__name__.replace("Brain","")
         dt["radius"] = snake.viewRadius
         dt["head"] = snake.headViewDirection
         dt["len"] = snake.len

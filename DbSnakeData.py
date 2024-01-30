@@ -48,3 +48,4 @@ class DbSnakeData():
     def countTable(self, tableClass: Base) -> int:
         with Session(autoflush=False, bind=self._engine) as db:
             return db.query(tableClass).count()
+

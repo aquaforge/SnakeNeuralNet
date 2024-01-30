@@ -6,6 +6,7 @@ from Enums.MoveDirection import MoveDirection
 class BrainBase():
     def __init__(self, viewRadius: int):
         self._viewRadius = viewRadius
+        self._model=None
 
     @property
     def viewRadius(self): return self._viewRadius

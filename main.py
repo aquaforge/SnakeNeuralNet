@@ -51,7 +51,10 @@ def initializeAll(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo:
 
     field = Field(FIELD_WIDTH, FIELD_HEIGHT)
     viewRadius = randint(4, 9)
-    trainData = ((None, None), (None, None))
+
+    dbo=DbTrainData()
+    trainData = (dbo.getTrainData(viewRadius,20000), dbo.getTrainData(viewRadius,500))
+
     if trainData[0][0] is None:
         pathFindLevel = 0.9
     else:

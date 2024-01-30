@@ -1,19 +1,24 @@
 import json
+from random import randint
 import numpy as np
+from Brains.BrainSimpleNN import BrainSimpleNN
+from DbSnakeData import DbSnakeData
 from DbTrainData import DbTrainData
 from Enums.MoveDirection import MoveDirection
 
+
+viewRadius = randint(2,8)
 dbo = DbTrainData()
-records = dbo.getTrainData(2, 20)
-x = [json.loads(r.path) for r in records]
-x=np.array(x)
+trainData = (dbo.getTrainData(viewRadius, 30000),
+            dbo.getTrainData(viewRadius, 1000))
 
-y = [([0]*len(MoveDirection), r.result) for r in records]
-y = [(p[0][:p[1]] + [1] + p[0][p[1]+1:], p[1]) for p in y]
-y = np.array([p[0] for p in y])
+dbo=DbSnakeData()
+for _ in range(50):
+    b=BrainSimpleNN.getNewTrinedBrain(viewRadius, trainData)
+    dbo.saveNN(b._model.info(), b._mse)
 
+print("gg")
 
-print(x.shape, y.shape)
 # from math import cos, sin
 # from random import random
 # import numpy as np

@@ -45,6 +45,7 @@ class ActivationNone():
     def derivative(x):
         return 1.0
 
+
 '''
 class ActivationSoftmax():  # https://eli.thegreenplace.net/2016/the-softmax-function-and-its-derivative/
     @staticmethod
@@ -52,6 +53,7 @@ class ActivationSoftmax():  # https://eli.thegreenplace.net/2016/the-softmax-fun
         exps = np.exp(x - np.max(x))
         return exps / np.sum(exps)
 '''
+
 
 @dataclass
 class Layer():
@@ -79,33 +81,42 @@ class SimpleNN:
                 layer.weights = None
                 layer.activation = None
                 w = None
-                b=None
+                b = None
             else:
                 if layer.activationClass == None:
                     layer.activationClass = ActivationNone
-                w = np.random.random(size=(layer.nodesCount, layers[i-1].nodesCount))
-                b= np.random.random(size=(layer.nodesCount, 1))
+                w = np.random.random(
+                    size=(layer.nodesCount, layers[i-1].nodesCount))
+                b = np.random.random(size=(layer.nodesCount, 1))
             self._layers.append(LayerExtended(nodesCount=layer.nodesCount,
-                                              activationClass=layer.activationClass, useBias=layer.useBias, bias=b,weights=w))
+                                              activationClass=layer.activationClass, useBias=layer.useBias, bias=b, weights=w))
 
     def predict(self, inputVector):
-        inputVector = np.array(inputVector).reshape(self._layers[0].nodesCount, 1)
+        # print(inputVector.reshape(5, 5))
+        inputVector[inputVector == -3] = -1
+        inputVector[inputVector == -2] = -1
+        inputVector = 0.999 * inputVector.astype(np.float32)
+        # print(inputVector.reshape(5, 5))
+
+        inputVector = np.array(inputVector).reshape(
+            self._layers[0].nodesCount, 1)
         self._layers[0].val = inputVector
         self._layers[0].valActivated = inputVector
         for i in range(1, len(self._layers)):
             val = self._layers[i-1].valActivated
             val = np.dot(self._layers[i].weights, val)
             if self._layers[i].useBias:
-                val+=self._layers[i].bias
-            self._layers[i].val=val
-            self._layers[i].valActivated = self._layers[i].activationClass.activation(val)
+                val += self._layers[i].bias
+            self._layers[i].val = val
+            self._layers[i].valActivated = self._layers[i].activationClass.activation(
+                val)
         return self._layers[-1].valActivated
 
     def clearTemp(self):
         for i in range(1, len(self._layers)):
             self._layers[i].val = None
             self._layers[i].valActivated = None
-            self._layers[i].gradients=None
+            self._layers[i].gradients = None
         return {"learningRate": self._learningRate, "layers": self._layers}
 
     @staticmethod
@@ -118,25 +129,28 @@ class SimpleNN:
             pass
 
     def train(self, inputVector, targetVector):
-        inputVector = np.array(inputVector).reshape(self._layers[0].nodesCount, 1)
-        targetVector = np.array(targetVector).reshape(self._layers[-1].nodesCount, 1)        
+        inputVector = np.array(inputVector).reshape(
+            self._layers[0].nodesCount, 1)
+        targetVector = np.array(targetVector).reshape(
+            self._layers[-1].nodesCount, 1)
 
-        for i in range(len(self._layers)-1,0,-1):
-            if i==len(self._layers)-1:
+        for i in range(len(self._layers)-1, 0, -1):
+            if i == len(self._layers)-1:
                 errors = targetVector - self.predict(inputVector)
             else:
-                errors=np.dot(self._layers[i+1].weights.T, errors)
-            gradients = self._layers[i].activationClass.derivative(self._layers[i].valActivated)
-            gradients*=errors
-            gradients*=self._learningRate
+                errors = np.dot(self._layers[i+1].weights.T, errors)
+            gradients = self._layers[i].activationClass.derivative(
+                self._layers[i].valActivated)
+            gradients *= errors
+            gradients *= self._learningRate
             self._layers[i].gradients = gradients
 
-        for i in range(1,len(self._layers)):
+        for i in range(1, len(self._layers)):
             if self._layers[i].useBias:
                 self._layers[i].bias += self._layers[i].gradients
-            a=self._layers[i].gradients
-            b=self._layers[i-1].valActivated.T
-            self._layers[i].weights+=np.dot(a,b)
+            a = self._layers[i].gradients
+            b = self._layers[i-1].valActivated.T
+            self._layers[i].weights += np.dot(a, b)
 
     def encode(self) -> dict:
         self.clearTemp()
@@ -154,34 +168,33 @@ class SimpleNN:
             d["useBias"] = layer.useBias
             l.append(d)
 
-        w=dict()
+        w = dict()
         w["weigthAvg"] = json.dumps([round(l.weights.mean(), 6)
-                    for l in self._layers if l.weights is not None])
+                                     for l in self._layers if l.weights is not None])
         w["weigthMin"] = json.dumps([round(l.weights.min(), 6)
-                    for l in self._layers if l.weights is not None])
+                                     for l in self._layers if l.weights is not None])
         w["weigthMax"] = json.dumps([round(l.weights.max(), 6)
-                    for l in self._layers if l.weights is not None])
+                                     for l in self._layers if l.weights is not None])
 
-        b=dict()
+        b = dict()
         b["weigthAvg"] = json.dumps([round(l.bias.mean(), 6)
-                    for l in self._layers if l.bias is not None])
+                                     for l in self._layers if l.bias is not None])
         b["weigthMin"] = json.dumps([round(l.bias.min(), 6)
-                    for l in self._layers if l.bias is not None])
+                                     for l in self._layers if l.bias is not None])
         b["weigthMax"] = json.dumps([round(l.bias.max(), 6)
-                    for l in self._layers if l.bias is not None])
-
+                                     for l in self._layers if l.bias is not None])
 
         d = dict()
-        d["config"] = json.dumps(l).replace(" ","")
-        d["weigths"] = json.dumps(w).replace(" ","")
-        d["bias"] = json.dumps(b).replace(" ","")
+        d["config"] = json.dumps(l).replace(" ", "")
+        d["weigths"] = json.dumps(w).replace(" ", "")
+        d["bias"] = json.dumps(b).replace(" ", "")
         d["data"] = self.encode()
         return d
 
     @staticmethod
     def decode(data: str):
         return jsonpickle.decode(data)
-    
+
 
 '''
     def train(self, input_array, target_array):
@@ -220,4 +233,4 @@ class SimpleNN:
 
         return outputs
 
-'''    
+'''

@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import create_engine, UniqueConstraint
+from sqlalchemy import Float, create_engine, UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Session
 from sqlalchemy import Column, Integer, String, DateTime
@@ -18,11 +18,11 @@ class BrainAi(Base):
     __tablename__ = "BrainAi"
     id = Column(Integer,  nullable=False, primary_key=True, autoincrement=True)
     config = Column(String,  nullable=False, index=True)
-    weigths = Column(String,  nullable=False, index=True)
-    bias = Column(String,  nullable=False, index=True)
     data = Column(String, nullable=False)
-    numTrainings = Column(Integer, nullable=False)
+    mse = Column(Float, nullable=False)
     totalAge = Column(Integer, nullable=False,  server_default="0")
+    countSteps = Column(Integer, nullable=False,
+                        server_default="0", index=True)
     countEat = Column(Integer, nullable=False,  server_default="0", index=True)
     countStay = Column(Integer, nullable=False,  server_default="0")
     countGiveBirth = Column(Integer, nullable=False,  server_default="0")
@@ -30,10 +30,12 @@ class BrainAi(Base):
     updatedOn = Column(DateTime(), nullable=False,
                        server_default=func.now(),  server_onupdate=func.now())
     __table_args__ = (
-        UniqueConstraint(config, weigths, bias),
+        UniqueConstraint(data),
     )
 
 # select.order_by(func.random())
+
+
 class DbSnakeData():
     sqlite_database = "sqlite:///_SnakeData.db"
 
@@ -49,3 +51,13 @@ class DbSnakeData():
         with Session(autoflush=False, bind=self._engine) as db:
             return db.query(tableClass).count()
 
+    def saveNN(self, info: dict, mse: float):
+        with Session(autoflush=False, bind=self._engine) as db:
+            record = db.query(BrainAi).filter(
+                BrainAi.data == info["data"]).first()
+            if record is None:
+                db.add(BrainAi(config=info["config"],
+                       data=info["data"], mse=round(mse,4)))
+                db.commit()
+            else:
+                pass

@@ -6,10 +6,11 @@ from SimpleNN import ActivationRelu, Layer, SimpleNN
 
 
 class BrainSimpleNN (BrainBase):
-    def __init__(self, viewRadius: int, model: SimpleNN, numTrainings: int):
+    def __init__(self, viewRadius: int, model: SimpleNN, numTrainings: int, mse:float):
         super().__init__(viewRadius)
         self._model = model
         self._numTrainings = numTrainings
+        self._mse = mse
 
     def getDirection(self, input_vector: np.array) -> MoveDirection:
         output_vector = self._model.predict(input_vector.T)
@@ -23,19 +24,14 @@ class BrainSimpleNN (BrainBase):
         for _ in range(1):
             l = list()
             l.append(Layer(nodesCount=size))
-            l.append(Layer(nodesCount=size//2 + randint(0, 5),
-                           activationClass=ActivationRelu, useBias=random() > 0.5))
-            if random() > 0.5:
-                l.append(Layer(nodesCount=len(MoveDirection) + randint(1, 8),
-                               activationClass=ActivationRelu, useBias=random() > 0.5))
-            l.append(Layer(nodesCount=len(MoveDirection),
-                           activationClass=ActivationRelu, useBias=False))
+            l.append(Layer(nodesCount=size//2, activationClass=ActivationRelu, useBias=True))
+            l.append(Layer(nodesCount=len(MoveDirection),activationClass=ActivationRelu, useBias=True))
             model = SimpleNN(layers=l, learningRate=0.01)
 
             if x_train is None or y_train is None:
                 return BrainSimpleNN(viewRadius, model, 0)
 
-            numTrainings = randint(5000, 80000)
+            numTrainings = randint(30000, 120000)
             for _ in range(numTrainings):
                 k = randint(0,x_train.shape[0]-1)
                 model.train(x_train[k,:,:], y_train[k,:])
@@ -44,10 +40,10 @@ class BrainSimpleNN (BrainBase):
             for i in range(y_test.shape[0]):
                 pred[i,:] = model.predict(x_test[i,:,:]).reshape(pred.shape[1])
 
-            print('mean', pred.mean())
+            # print('mean', pred.mean())
             mse = SimpleNN.mseLoss(y_test, pred)
             print(mse)
-            if mse < 0.05:
+            if mse < 0.1:
                 break
 
-        return BrainSimpleNN(viewRadius, model, numTrainings)
+        return BrainSimpleNN(viewRadius, model, numTrainings, mse)

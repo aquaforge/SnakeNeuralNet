@@ -20,8 +20,8 @@ from DbTrainData import TrainData, DbTrainData
 
 # https://ru.hexlet.io/blog/posts/19-bibliotek-dlya-python?ysclid=lrus9b9ejh622626382
 
-FIELD_WIDTH = 102
-FIELD_HEIGHT = 57
+FIELD_WIDTH = 50 #102
+FIELD_HEIGHT = 30 # 57
 CANVAS_BLOCK_SIZE = 15
 
 # FIELD_WIDTH = 100
@@ -50,14 +50,15 @@ def initializeAll(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo:
     epochCount += 1
 
     field = Field(FIELD_WIDTH, FIELD_HEIGHT)
-    viewRadius = 2  # randint(4, 9)
+    viewRadius = 8  # randint(4, 9)
 
-    dbo = DbTrainData()
-    # trainData = (dbo.getTrainData(viewRadius, 30000),
-    #              dbo.getTrainData(viewRadius, 1000))
 
-    trainData = ((None, None),(None, None))
-
+    if True:
+        dbo = DbTrainData()
+        trainData = (dbo.getTrainData(viewRadius, 30000),
+                    dbo.getTrainData(viewRadius, 1000))
+    else:
+        trainData = ((None, None),(None, None))
 
 
     pathFindLevel = 0.9

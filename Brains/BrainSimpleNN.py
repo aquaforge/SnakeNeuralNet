@@ -12,7 +12,7 @@ class BrainSimpleNN (BrainBase):
         self._numTrainings = numTrainings
 
     def getDirection(self, input_vector: np.array) -> MoveDirection:
-        output_vector = self._model.predict(input_vector)
+        output_vector = self._model.predict(input_vector.T)
         return MoveDirection(output_vector.argmax())
 
     @staticmethod
@@ -35,7 +35,7 @@ class BrainSimpleNN (BrainBase):
             if x_train is None or y_train is None:
                 return BrainSimpleNN(viewRadius, model, 0)
 
-            numTrainings = randint(5000, 20000)
+            numTrainings = randint(5000, 80000)
             for _ in range(numTrainings):
                 k = randint(0,x_train.shape[0]-1)
                 model.train(x_train[k,:,:], y_train[k,:])

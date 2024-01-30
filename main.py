@@ -53,8 +53,12 @@ def initializeAll(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo:
     viewRadius = 2  # randint(4, 9)
 
     dbo = DbTrainData()
-    trainData = (dbo.getTrainData(viewRadius, 20000),
-                 dbo.getTrainData(viewRadius, 500))
+    # trainData = (dbo.getTrainData(viewRadius, 30000),
+    #              dbo.getTrainData(viewRadius, 1000))
+
+    trainData = ((None, None),(None, None))
+
+
 
     pathFindLevel = 0.9
     l = 0
@@ -71,13 +75,13 @@ def initializeAll(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo:
     while h+15 < FIELD_HEIGHT:
         w = 2
         while w+5 < FIELD_WIDTH:
-            if random() > pathFindLevel:
+            if random() > 0.05: #pathFindLevel:
                 col = Color(randint(70, 230), 0, randint(70, 230))
-                field.addSnakeToField(Snake([(w, h+k) for k in range(7)],  BrainSimpleNN.getNewTrinedBrain(
+                field.addSnakeToField(Snake([(w, h+k) for k in range(5)],  BrainSimpleNN.getNewTrinedBrain(
                     viewRadius, trainData), Direction.UP, col))
             else:
                 col = Color(0, randint(150, 200), 0)
-                field.addSnakeToField(Snake([(w, h+k) for k in range(7)],  BrainPathFind(
+                field.addSnakeToField(Snake([(w, h+k) for k in range(5)],  BrainPathFind(
                     viewRadius), Direction.UP, col))
 
             w += 5

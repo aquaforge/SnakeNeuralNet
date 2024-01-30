@@ -11,7 +11,7 @@ import matplotlib as mpl
 # y=sin(x * pi * 3.5) + 1pip
 def fun(x):
     # return sin(x*3.1415926*3.5) #+1.0
-    return cos(x*3.1415926*3.5) #+1.0
+    return cos(x*3.1415926*3.5)  # +1.0
 
 
 l = list()
@@ -33,28 +33,27 @@ nn = SimpleNN(layers=l, learningRate=0.01)
 # print(np.sum(y), np.sum(o))
 
 
-y=random()
-o = nn.predict( np.array([y]))
+y = random()
+o = nn.predict(np.array([y]))
 # print(fun(y), np.sum(o))
 
 for i in range(90000):
-    v=random()
+    v = random()
     nn.train(np.array([v]), np.array([fun(v)]))
 
-o = nn.predict( np.array([y]))
+o = nn.predict(np.array([y]))
 # print(fun(y), np.sum(o))
 
 # https://skillbox.ru/media/code/biblioteka-matplotlib-dlya-postroeniya-grafikov/?ysclid=lrz9bhflcp714131757
-t=[i/100 for i in range(100)]
-f=[fun(x) for x in t]
-n=[np.sum(nn.predict(np.array([x]))) for x in t]
+t = [i/100 for i in range(100)]
+f = [fun(x) for x in t]
+n = [np.sum(nn.predict(np.array([x]))) for x in t]
 
-print(SimpleNN.mseLoss(f,n))
+print(SimpleNN.mseLoss(f, n))
 
-plt.plot(t, f, 'r') # plotting t, a separately 
-plt.plot(t, n, 'b') # plotting t, b separately 
+plt.plot(t, f, 'r')  # plotting t, a separately
+plt.plot(t, n, 'b')  # plotting t, b separately
 plt.show()
-
 
 
 # s = nn.encode()

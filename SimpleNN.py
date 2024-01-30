@@ -162,10 +162,19 @@ class SimpleNN:
         w["weigthMax"] = json.dumps([round(l.weights.max(), 6)
                     for l in self._layers if l.weights is not None])
 
+        b=dict()
+        b["weigthAvg"] = json.dumps([round(l.bias.mean(), 6)
+                    for l in self._layers if l.bias is not None])
+        b["weigthMin"] = json.dumps([round(l.bias.min(), 6)
+                    for l in self._layers if l.bias is not None])
+        b["weigthMax"] = json.dumps([round(l.bias.max(), 6)
+                    for l in self._layers if l.bias is not None])
+
 
         d = dict()
         d["config"] = json.dumps(l).replace(" ","")
-        d["weigth"] = json.dumps(w).replace(" ","")
+        d["weigths"] = json.dumps(w).replace(" ","")
+        d["bias"] = json.dumps(b).replace(" ","")
         d["data"] = self.encode()
         return d
 

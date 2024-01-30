@@ -18,19 +18,19 @@ class BrainAi(Base):
     __tablename__ = "BrainAi"
     id = Column(Integer,  nullable=False, primary_key=True, autoincrement=True)
     config = Column(String,  nullable=False, index=True)
-    weigth = Column(String,  nullable=False, index=True)
+    weigths = Column(String,  nullable=False, index=True)
     bias = Column(String,  nullable=False, index=True)
     data = Column(String, nullable=False)
     numTrainings = Column(Integer, nullable=False)
     totalAge = Column(Integer, nullable=False,  server_default="0")
-    eatCount = Column(Integer, nullable=False,  server_default="0", index=True)
+    countEat = Column(Integer, nullable=False,  server_default="0", index=True)
+    countStay = Column(Integer, nullable=False,  server_default="0")
     countGiveBirth = Column(Integer, nullable=False,  server_default="0")
     createdOn = Column(DateTime(), nullable=False, server_default=func.now())
     updatedOn = Column(DateTime(), nullable=False,
                        server_default=func.now(),  server_onupdate=func.now())
-
     __table_args__ = (
-        UniqueConstraint(config, weigth, bias),
+        UniqueConstraint(config, weigths, bias),
     )
 
 

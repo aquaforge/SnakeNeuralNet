@@ -66,7 +66,7 @@ def initializeAll(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo:
             # field.addSnakeToField(Snake([(w, h+k) for k in range(7)], BrainBase(SNAKE_VIEW_RADIUS), Direction.UP,
             #                             Color.randomColor(COLOR_SNAKE_RANGE[0], COLOR_SNAKE_RANGE[1])))
 
-            field.addSnakeToField(Snake([(w, h+k) for k in range(7)], BrainPathFind(randint(2, 10)), Direction.UP,
+            field.addSnakeToField(Snake([(w, h+k) for k in range(7)], BrainPathFind(randint(2, 12)), Direction.UP,
                                         Color.randomColor(COLOR_SNAKE_RANGE[0], COLOR_SNAKE_RANGE[1])))
 
             # col = randint(COLOR_SNAKE_RANGE[0], COLOR_SNAKE_RANGE[1])

@@ -32,6 +32,7 @@ class Snake:
         self._age = 0
         self._countEat = 0
         self._countGiveBirth = 0
+        self._countStay = 0
 
         self.mapDirectionArrows = {Direction.UP: (0, -1),   Direction.DOWN: (0, 1),
                                    Direction.LEFT: (1, 0), Direction.RIGHT: (1, 0)}
@@ -47,6 +48,9 @@ class Snake:
 
     @property
     def countGiveBirth(self): return self._countGiveBirth
+
+    @property
+    def countStay(self): return self._countStay
 
     @property
     def countEat(self): return self._countEat
@@ -126,9 +130,10 @@ class Snake:
         if len(self._body) >= TAIL_MAX_LENTH:
             self._giveBirth(setPoint, addSnakeToField)
 
-
     def _move(self, action: MoveDirection, getPointType, setPoint):
         if (not self._alive or self.len == 0 or action == MoveDirection.STAY):
+            if action == MoveDirection.STAY:
+                self._countStay += 1
             return True
 
         if (action == MoveDirection.LEFT):
@@ -146,7 +151,7 @@ class Snake:
         new_head = (h[0]+m[0], h[1]+m[1])
 
         pt = getPointType(new_head)
-        if (pt == PointType.WALL or pt == PointType.SNAKE  or pt == PointType.SNAKE_HEAD):
+        if (pt == PointType.WALL or pt == PointType.SNAKE or pt == PointType.SNAKE_HEAD):
             self.die(setPoint)
             return
         elif pt == PointType.FOOD:
@@ -156,7 +161,8 @@ class Snake:
 
         self._body = [new_head] + self._body
         for i, p in enumerate(self._body):
-            setPoint(p, (PointType.SNAKE_HEAD if i==0 else PointType.SNAKE), self.getColorByBodyId(i))
+            setPoint(p, (PointType.SNAKE_HEAD if i ==
+                     0 else PointType.SNAKE), self.getColorByBodyId(i))
 
     def getHeadView(self, getPointType, asPointType: bool = False) -> np.array:
         view = np.full((2*self._brain.viewRadius+1, 2 *
@@ -175,7 +181,7 @@ class Snake:
     def _giveBirth(self, setPoint, addSnakeToField):
         if not self.alive or len(self._body) < TAIL_MAX_LENTH:
             return
-        
+
         self._countGiveBirth += 1
         body = self._body[-1:TAIL_MAX_LENTH//2-1:-1]
         for i in range(TAIL_MAX_LENTH//2):

@@ -9,10 +9,7 @@ class BrainSimpleNN (BrainBase):
         super().__init__(viewRadius)
         self._model = model
 
-    def getDirection(self, view: np.array) -> MoveDirection:
-        '''view: np 2D matrix'''
-        input_vector = view.flatten()
-        input_vector = input_vector.reshape(1, input_vector.size)
+    def getDirection(self, input_vector: np.array) -> MoveDirection:
         output_vector = self._model.predict(input_vector, verbose=0)
         return MoveDirection(output_vector.argmax())
 

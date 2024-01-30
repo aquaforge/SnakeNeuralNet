@@ -128,7 +128,7 @@ class Field:
 
     def getAverageRank(self) -> list:
         r = dict()
-        for i in range(2, 10):
+        for i in range(2, 15):
             l = [sn.rankPersent for sn in self._snakes if sn.viewRadius == i]
             if len(l) > 0:
                 r[i]=round(mean(l), 2)

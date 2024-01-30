@@ -50,20 +50,21 @@ def initializeAll(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo:
     epochCount += 1
 
     field = Field(FIELD_WIDTH, FIELD_HEIGHT)
-    viewRadius = randint(4, 9)
+    viewRadius = 2  # randint(4, 9)
 
-    dbo=DbTrainData()
-    trainData = (dbo.getTrainData(viewRadius,20000), dbo.getTrainData(viewRadius,500))
+    dbo = DbTrainData()
+    trainData = (dbo.getTrainData(viewRadius, 20000),
+                 dbo.getTrainData(viewRadius, 500))
 
-    if trainData[0][0] is None:
-        pathFindLevel = 0.9
-    else:
-        l = trainData[0][0].shape(0)
+    pathFindLevel = 0.9
+    l = 0
+    if trainData[0][0] is not None:
+        l = trainData[0][0].shape[0]
         if l < 5000:
             pathFindLevel = 0.5
-        elif l < 10000:
-            pathFindLevel = 0.3
         elif l < 20000:
+            pathFindLevel = 0.3
+        else:
             pathFindLevel = 0.05
 
     h = 2

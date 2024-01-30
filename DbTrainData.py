@@ -61,6 +61,7 @@ class DbTrainData():
 
             x = [json.loads(r.path) for r in records]
             x = np.array(x)
+            
             y = [([0]*len(MoveDirection), r.result) for r in records]
             y = [(p[0][:p[1]] + [1] + p[0][p[1]+1:], p[1]) for p in y]
             y = np.array([p[0] for p in y])

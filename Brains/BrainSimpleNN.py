@@ -20,7 +20,7 @@ class BrainSimpleNN (BrainBase):
         (x_train, y_train), (x_test, y_test) = trainData
 
         size = (2*viewRadius+1)**2
-        for _ in range(5):
+        for _ in range(1):
             l = list()
             l.append(Layer(nodesCount=size))
             l.append(Layer(nodesCount=size//2 + randint(0, 5),
@@ -32,18 +32,19 @@ class BrainSimpleNN (BrainBase):
                            activationClass=ActivationRelu, useBias=False))
             model = SimpleNN(layers=l, learningRate=0.01)
 
-            if x_train is None:
+            if x_train is None or y_train is None:
                 return BrainSimpleNN(viewRadius, model, 0)
 
-            numTrainings = randint(50000, 120000)
+            numTrainings = randint(5000, 20000)
             for _ in range(numTrainings):
-                k = randint(x_train.shape(0)-1)
-                model.train(x_train[k:], y_train[k:])
+                k = randint(0,x_train.shape[0]-1)
+                model.train(x_train[k,:,:], y_train[k,:])
 
             pred = np.empty(shape=y_test.shape)
-            for i in (y_test.shape[0]):
-                pred[i:] = model.predict(y_test[i:])
+            for i in range(y_test.shape[0]):
+                pred[i,:] = model.predict(x_test[i,:,:]).reshape(pred.shape[1])
 
+            print('mean', pred.mean())
             mse = SimpleNN.mseLoss(y_test, pred)
             print(mse)
             if mse < 0.05:

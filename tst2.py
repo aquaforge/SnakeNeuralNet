@@ -7,17 +7,17 @@ from DbTrainData import DbTrainData
 from Enums.MoveDirection import MoveDirection
 
 
-viewRadius = randint(2,8)
-dbo = DbTrainData()
-trainData = (dbo.getTrainData(viewRadius, 30000),
-            dbo.getTrainData(viewRadius, 1000))
+for viewRadius in range(4,10):
+    dbo = DbTrainData()
+    trainData = (dbo.getTrainData(viewRadius, 20000),
+                dbo.getTrainData(viewRadius, 1000))
+    dbo = DbSnakeData()
+    for i in range(200):
+        b = BrainSimpleNN.getNewTrainedBrain(viewRadius, trainData)
+        if b._mse < 0.15:
+            dbo.saveNN(b._model.info(), viewRadius,  b._mse)
+        print(viewRadius, i, b._mse)
 
-dbo=DbSnakeData()
-for _ in range(50):
-    b=BrainSimpleNN.getNewTrinedBrain(viewRadius, trainData)
-    dbo.saveNN(b._model.info(), b._mse)
-
-print("gg")
 
 # from math import cos, sin
 # from random import random

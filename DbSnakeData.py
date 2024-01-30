@@ -17,7 +17,8 @@ class Base(DeclarativeBase):
 class BrainAi(Base):
     __tablename__ = "BrainAi"
     id = Column(Integer,  nullable=False, primary_key=True, autoincrement=True)
-    config = Column(String,  nullable=False, index=True)
+    viewRadius = Column(Integer,  nullable=False, index=True)
+    config = Column(String,  nullable=False)
     data = Column(String, nullable=False)
     mse = Column(Float, nullable=False)
     totalAge = Column(Integer, nullable=False,  server_default="0")
@@ -51,13 +52,13 @@ class DbSnakeData():
         with Session(autoflush=False, bind=self._engine) as db:
             return db.query(tableClass).count()
 
-    def saveNN(self, info: dict, mse: float):
+    def saveNN(self, info: dict, viewRadius: int, mse: float):
         with Session(autoflush=False, bind=self._engine) as db:
             record = db.query(BrainAi).filter(
                 BrainAi.data == info["data"]).first()
             if record is None:
                 db.add(BrainAi(config=info["config"],
-                       data=info["data"], mse=round(mse,4)))
+                       data=info["data"], viewRadius=viewRadius, mse=round(mse, 6)))
                 db.commit()
             else:
                 pass

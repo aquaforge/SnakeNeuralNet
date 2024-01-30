@@ -33,7 +33,7 @@ class BrainAi(Base):
         UniqueConstraint(config, weigths, bias),
     )
 
-
+# select.order_by(func.random())
 class DbSnakeData():
     sqlite_database = "sqlite:///_SnakeData.db"
 

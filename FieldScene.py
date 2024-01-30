@@ -92,25 +92,34 @@ class FieldScene(object):
             s += f"{key}:{dt[key]}\n"
         self._snakeInfo.insert(1.0, s)
 
-        view = snake.getHeadView(self._field.getPointType, asPointType=True)
+        head = snake.head
+        z = 2*snake.viewRadius+1
         colorEmpty = COLOR_EMPTY.toHTMLColor
-        arrayDim = 2*snake.viewRadius+1
-        blockSize = 15
-        self._canvasHead.place(
-            width=blockSize*arrayDim, height=blockSize*arrayDim)
-        for i in range(arrayDim):
-            for j in range(arrayDim):
-                col = COLOR_EMPTY.toHTMLColor
-                if i == snake.viewRadius and j == snake.viewRadius:
-                    col = COLOR_SNAKE.darker().toHTMLColor
-                elif view[i, j] == PointType.FOOD:
-                    col = COLOR_FOOD.toHTMLColor
-                elif view[i, j] == PointType.WALL:
-                    col = COLOR_WALL.toHTMLColor
-                elif view[i, j] == PointType.SNAKE:
-                    col = COLOR_SNAKE.toHTMLColor
-                elif view[i, j] == PointType.SNAKE_HEAD:
-                    col = COLOR_SNAKE.darker().toHTMLColor
-
+        blockSize = self._canvasHead.winfo_width()/z
+        for i in range(z):
+            for j in range(z):
                 self._drawRect(self._canvasHead, (i, j),
-                               blockSize, col, colorEmpty)
+                               blockSize, self._field.getPointColorHTML((i-snake.viewRadius+head[0],j-snake.viewRadius+head[1])), colorEmpty)
+
+        # view = snake.getHeadView(self._field.getPointType, asPointType=True, rotated=False)
+        # colorEmpty = COLOR_EMPTY.toHTMLColor
+        # arrayDim = 2*snake.viewRadius+1
+        # blockSize = 15
+        # self._canvasHead.place(
+        #     width=blockSize*arrayDim, height=blockSize*arrayDim)
+        # for i in range(arrayDim):
+        #     for j in range(arrayDim):
+        #         col = COLOR_EMPTY.toHTMLColor
+        #         if i == snake.viewRadius and j == snake.viewRadius:
+        #             col = COLOR_SNAKE.darker().toHTMLColor
+        #         elif view[i, j] == PointType.FOOD:
+        #             col = COLOR_FOOD.toHTMLColor
+        #         elif view[i, j] == PointType.WALL:
+        #             col = COLOR_WALL.toHTMLColor
+        #         elif view[i, j] == PointType.SNAKE:
+        #             col = COLOR_SNAKE.toHTMLColor
+        #         elif view[i, j] == PointType.SNAKE_HEAD:
+        #             col = COLOR_SNAKE.darker().toHTMLColor
+
+        #         self._drawRect(self._canvasHead, (i, j),
+        #                        blockSize, col, colorEmpty)

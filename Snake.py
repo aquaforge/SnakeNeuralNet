@@ -117,12 +117,10 @@ class Snake:
             else:
                 return self.die(setPoint)
         view = self.getHeadView(getPointType)
-        # print(view)
         action = self._brain.getDirection(view)
         if type(self._brain).__name__ == "BrainPathFind":
             # print (view.T)
             str = json.dumps(view.T, cls=NumpyArrayEncoder).replace(" ", "")
-            # print (b)
             Snake.pathData[str] = {"path": str, "result": int(
                 action), "viewSize": self._brain.viewRadius, "hasFood": (int(PointType.FOOD) in view)}
 
@@ -164,7 +162,7 @@ class Snake:
             setPoint(p, (PointType.SNAKE_HEAD if i ==
                      0 else PointType.SNAKE), self.getColorByBodyId(i))
 
-    def getHeadView(self, getPointType, asPointType: bool = False) -> np.array:
+    def getHeadView(self, getPointType, asPointType: bool = False, rotated:bool=True) -> np.array:
         view = np.full((2*self._brain.viewRadius+1, 2 *
                        self._brain.viewRadius+1), PointType.EMPTY if asPointType else 0)
         head = self.head
@@ -174,7 +172,7 @@ class Snake:
                 pt = getPointType((
                     head[0]-viewRadius+x, head[1]-viewRadius+y))
                 view[x, y] = pt if asPointType else int(pt)
-        if self._headView != Direction.UP:
+        if rotated and self._headView != Direction.UP:
             view = np.rot90(view, int(self._headView))
         return view
 

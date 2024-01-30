@@ -28,6 +28,4 @@ class BrainBase():
 
     @property
     def toJsonStr(self) -> str:
-        # json.dumps() is used to decode JSON data
-        # https://docs-python.ru/standart-library/modul-json-python/funktsija-dumps-modulja-json/
-        return json.dumps(self.getInfoDict, indent=4)
+        return json.dumps(self.getInfoDict)

@@ -109,6 +109,8 @@ class FieldScene(object):
                     col = COLOR_WALL.toHTMLColor
                 elif view[i, j] == PointType.SNAKE:
                     col = COLOR_SNAKE.toHTMLColor
+                elif view[i, j] == PointType.SNAKE_HEAD:
+                    col = COLOR_SNAKE.darker().toHTMLColor
 
                 self._drawRect(self._canvasHead, (i, j),
                                blockSize, col, colorEmpty)

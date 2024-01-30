@@ -4,17 +4,17 @@ from Enums.MoveDirection import MoveDirection
 
 
 class BrainPathFind (BrainBase):
-    FOOD_REPLACE = -9  # less than -1
+    FOOD_REPLACE = -9  # less than -5
 
     def __init__(self, viewRadius: int):
         super().__init__(viewRadius)
 
     def _getSimpleDirection(self, view: np.array) -> MoveDirection:
-        if view[self._viewRadius, self._viewRadius-1] != -1:
+        if view[self._viewRadius, self._viewRadius-1] >=0:
             return MoveDirection.FORWARD
-        elif view[self._viewRadius-1, self._viewRadius] != -1:
+        elif view[self._viewRadius-1, self._viewRadius] >=0:
             return MoveDirection.LEFT
-        elif view[self._viewRadius+1, self._viewRadius] != -1:
+        elif view[self._viewRadius+1, self._viewRadius] >=0:
             return MoveDirection.RIGHT
         else:
             return MoveDirection.STAY
@@ -86,5 +86,3 @@ class BrainPathFind (BrainBase):
             wave = wave_new
         return None
 
-    @property
-    def toJsonStr(self) -> str: return "TBD"

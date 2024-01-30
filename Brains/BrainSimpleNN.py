@@ -16,5 +16,3 @@ class BrainSimpleNN (BrainBase):
         output_vector = self._model.predict(input_vector, verbose=0)
         return MoveDirection(output_vector.argmax())
 
-    @property
-    def toJsonStr(self) -> str: return "TBD"

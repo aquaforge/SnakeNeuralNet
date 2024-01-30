@@ -66,12 +66,12 @@ class Field:
                 self.__fieldData[p[0]][p[1]] = (pt, colorHTML)
                 return
 
-            if ptOld == PointType.FOOD and pt in (PointType.EMPTY, PointType.SNAKE, PointType.WALL):
+            if ptOld == PointType.FOOD and pt in (PointType.EMPTY, PointType.SNAKE, PointType.WALL, PointType.SNAKE_HEAD):
                 self._foodCount -= 1
                 self.__fieldData[p[0]][p[1]] = (pt, colorHTML)
                 return
 
-            if pt == PointType.FOOD and ptOld in (PointType.EMPTY, PointType.SNAKE, PointType.WALL):
+            if pt == PointType.FOOD and ptOld in (PointType.EMPTY, PointType.SNAKE, PointType.WALL, PointType.SNAKE_HEAD):
                 self._foodCount += 1
                 self.__fieldData[p[0]][p[1]] = (pt, colorHTML)
                 return
@@ -162,7 +162,7 @@ class Field:
                     pass  # raise
 
             for i, p in enumerate(snake.body):
-                self.setPoint(p, PointType.SNAKE, snake.getColorByBodyId(i))
+                self.setPoint(p, (PointType.SNAKE_HEAD if i==0 else PointType.SNAKE), snake.getColorByBodyId(i))
 
             self._snakes.add(snake)
             # self.selectedSnake = snake

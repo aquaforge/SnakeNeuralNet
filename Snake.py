@@ -146,7 +146,7 @@ class Snake:
         new_head = (h[0]+m[0], h[1]+m[1])
 
         pt = getPointType(new_head)
-        if (pt == PointType.WALL or pt == PointType.SNAKE):
+        if (pt == PointType.WALL or pt == PointType.SNAKE  or pt == PointType.SNAKE_HEAD):
             self.die(setPoint)
             return
         elif pt == PointType.FOOD:
@@ -156,7 +156,7 @@ class Snake:
 
         self._body = [new_head] + self._body
         for i, p in enumerate(self._body):
-            setPoint(p, PointType.SNAKE, self.getColorByBodyId(i))
+            setPoint(p, (PointType.SNAKE_HEAD if i==0 else PointType.SNAKE), self.getColorByBodyId(i))
 
     def getHeadView(self, getPointType, asPointType: bool = False) -> np.array:
         view = np.full((2*self._brain.viewRadius+1, 2 *
@@ -167,8 +167,7 @@ class Snake:
             for y in range(view.shape[0]):
                 pt = getPointType((
                     head[0]-viewRadius+x, head[1]-viewRadius+y))
-                view[x, y] = pt if asPointType else (
-                    -1 if pt == PointType.SNAKE else int(pt))
+                view[x, y] = pt if asPointType else int(pt)
         if self._headView != Direction.UP:
             view = np.rot90(view, int(self._headView))
         return view

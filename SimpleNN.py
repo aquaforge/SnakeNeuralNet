@@ -109,8 +109,8 @@ class SimpleNN:
         return {"learningRate": self._learningRate, "layers": self._layers}
 
     @staticmethod
-    def mse_loss(y_true, y_pred):
-        return ((y_true - y_pred) ** 2).mean()
+    def mseLoss(y_true, y_pred):
+        return ((np.array(y_true) - np.array(y_pred)) ** 2).mean()
 
     def trainEpoch(self, inputData: np.array, targetData: np.array, epochs: int = 1):
         '''inputData shape (60000,786)  targetData shape (60000,10)'''

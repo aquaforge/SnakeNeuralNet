@@ -47,6 +47,9 @@ class FieldScene(object):
         img.save(name)
 
     def drawAll(self):
+        if self._field.age % 50 !=0:
+            return
+
         if self._field.needRedraw:
             sel = list() if self._field.selectedSnake is None else self._field.selectedSnake._body
             colorOutline = COLOR_OUTLINE.toHTMLColor

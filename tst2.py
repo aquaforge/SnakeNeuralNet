@@ -11,6 +11,7 @@ from Enums.MoveDirection import MoveDirection
 def dtNow():
     return datetime.now().strftime("%H:%M:%S")
 
+
 dbo = DbTrainData()
 distinctRadius = dbo.getDistinctViewRadius()
 if len(distinctRadius) == 0:
@@ -18,18 +19,17 @@ if len(distinctRadius) == 0:
 else:
     trainData = list()
     for i in distinctRadius:
-        if i < 3:
-            td = (dbo.getTrainData(i, 20000),
-                    dbo.getTrainData(i, 1000))
-            if td[0][0] is not None:
-                trainData.append((i, td))
-            print(dtNow(), "data", i)
+        td = (dbo.getTrainData(i, 20000),
+              dbo.getTrainData(i, 1000))
+        if td[0][0] is not None:
+            trainData.append((i, td))
+        print(dtNow(), "data", i)
 
 if len(trainData) > 0:
     print(dtNow(), "data loaded")
     dbo = DbSnakeData()
     for i in range(200):
-        viewRadius, td = trainData[0] # trainData[randint(1, len(trainData)-1)]
+        viewRadius, td = trainData[randint(1, len(trainData)-1)]
         b = BrainSimpleNN.getNewTrainedBrain(viewRadius, td)
         if b._mse < 0.12:
             info = b._model.info()

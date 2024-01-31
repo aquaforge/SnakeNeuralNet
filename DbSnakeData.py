@@ -57,7 +57,7 @@ class DbSnakeData():
 
     def getBestTop(self, countRecords: int = 200) -> list:
         with Session(autoflush=False, bind=self._engine) as db:
-            records = db.query(BrainAi).order_by(
+            records = db.query(BrainAi).where(BrainAi.viewRadius != 2).order_by(
                 BrainAi.mse.asc()).limit(countRecords).all()
             return [r.__dict__ for r in records]
 

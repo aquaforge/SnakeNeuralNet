@@ -21,18 +21,18 @@ from DbTrainData import TrainData, DbTrainData
 
 # https://ru.hexlet.io/blog/posts/19-bibliotek-dlya-python?ysclid=lrus9b9ejh622626382
 
-FIELD_WIDTH = 102
-FIELD_HEIGHT = 57
-CANVAS_BLOCK_SIZE = 15
+FIELD_WIDTH = 102*2
+FIELD_HEIGHT = 57*2
+CANVAS_BLOCK_SIZE = 7
 
-# FIELD_WIDTH = 100
-# FIELD_HEIGHT = 50
+# FIELD_WIDTH = 102
+# FIELD_HEIGHT = 57
 # CANVAS_BLOCK_SIZE = 15
 
 
 SCREEN_WIDTH = 1800
 SCREEN_HEIGHT = 900
-STEP_DELAY_MS = 50
+STEP_DELAY_MS = 10
 
 running: bool = True
 paused: bool = False
@@ -41,12 +41,15 @@ fieldScene = None
 epochCount = 0
 
 
+
+
 def initializeAll(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo: Text):
     global running
     global field
     global fieldScene
     global paused
     global epochCount
+
 
     epochCount += 1
 
@@ -63,7 +66,8 @@ def initializeAll(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo:
         w = 2
         while w+5 < FIELD_WIDTH:
             if snakesBestData is not None and len(snakesBestData) > 0:
-                col = Color(randint(70, 230), 0, randint(70, 230))
+                col = Color(randint(70, 230), randint(
+                    70, 230), randint(70, 230))
                 snakeData = snakesBestData[randint(0, len(snakesBestData)-1)]
                 nn = SimpleNN.decode(snakeData['data'])
                 nn._id = snakeData['id']
@@ -82,6 +86,7 @@ def initializeAll(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo:
                             root, canvasField, canvasHead, snakeInfo)
 
     fieldScene.drawAll()
+
     root.after(500, calculateOne, root, canvasField,  canvasHead, snakeInfo)
 
 
@@ -137,6 +142,7 @@ def calculateOne(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo: 
     global paused
     global epochCount
 
+
     if not running:
         return
 
@@ -156,8 +162,10 @@ def calculateOne(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo: 
         start = datetime.now()
         if not paused:
             field.doOneStep()
-            # fieldScene.saveImage("aa.png")
+
+
         fieldScene.drawAll()
+
         end = datetime.now()
         d = int(STEP_DELAY_MS-1000*(end - start).total_seconds())
         # print(d)

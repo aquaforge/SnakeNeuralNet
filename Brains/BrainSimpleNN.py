@@ -6,7 +6,7 @@ from SimpleNN import ActivationRelu, Layer, SimpleNN
 
 
 class BrainSimpleNN (BrainBase):
-    def __init__(self, viewRadius: int, model: SimpleNN, numTrainings: int, mse:float):
+    def __init__(self, viewRadius: int, model: SimpleNN, numTrainings: int=0, mse:float=0):
         super().__init__(viewRadius)
         self._model = model
         self._numTrainings = numTrainings

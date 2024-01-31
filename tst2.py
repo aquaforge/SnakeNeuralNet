@@ -7,9 +7,9 @@ from DbTrainData import DbTrainData
 from Enums.MoveDirection import MoveDirection
 
 
-for viewRadius in range(4,10):
+for viewRadius in range(10,4,-1):
     dbo = DbTrainData()
-    trainData = (dbo.getTrainData(viewRadius, 20000),
+    trainData = (dbo.getTrainData(viewRadius, 40000),
                 dbo.getTrainData(viewRadius, 1000))
     dbo = DbSnakeData()
     for i in range(200):

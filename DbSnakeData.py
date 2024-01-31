@@ -53,12 +53,19 @@ class DbSnakeData():
             return db.query(tableClass).count()
 
     def saveNN(self, info: dict, viewRadius: int, mse: float):
+        # newNN =  SimpleNN.decode(s)
         with Session(autoflush=False, bind=self._engine) as db:
             record = db.query(BrainAi).filter(
                 BrainAi.data == info["data"]).first()
             if record is None:
                 db.add(BrainAi(config=info["config"],
-                       data=info["data"], viewRadius=viewRadius, mse=round(mse, 6)))
+                       data=info["data"], viewRadius=viewRadius, mse=mse))
                 db.commit()
             else:
                 pass
+
+
+    def getBestTop(self,countRecords: int = 200)->list:
+        with Session(autoflush=False, bind=self._engine) as db:
+            records = db.query(BrainAi).order_by(BrainAi.mse.asc()).limit(countRecords).all()
+            return [r.__dict__ for r in records]

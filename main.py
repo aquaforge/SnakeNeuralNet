@@ -5,6 +5,7 @@ from tkinter import ttk
 from Brains.BrainBase import BrainBase
 from Brains.BrainPathFind import BrainPathFind
 from Brains.BrainSimpleNN import BrainSimpleNN
+from DbSnakeData import DbSnakeData
 from SimpleNN import SimpleNN
 from Enums.Direction import Direction
 from Color import COLOR_EMPTY, COLOR_SNAKE_RANGE, Color
@@ -20,8 +21,8 @@ from DbTrainData import TrainData, DbTrainData
 
 # https://ru.hexlet.io/blog/posts/19-bibliotek-dlya-python?ysclid=lrus9b9ejh622626382
 
-FIELD_WIDTH = 50 #102
-FIELD_HEIGHT = 30 # 57
+FIELD_WIDTH = 102
+FIELD_HEIGHT = 57
 CANVAS_BLOCK_SIZE = 15
 
 # FIELD_WIDTH = 100
@@ -52,39 +53,20 @@ def initializeAll(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo:
     field = Field(FIELD_WIDTH, FIELD_HEIGHT)
     viewRadius = 8  # randint(4, 9)
 
-
-    if True:
-        dbo = DbTrainData()
-        trainData = (dbo.getTrainData(viewRadius, 30000),
-                    dbo.getTrainData(viewRadius, 1000))
-    else:
-        trainData = ((None, None),(None, None))
-
-
-    pathFindLevel = 0.9
-    l = 0
-    if trainData[0][0] is not None:
-        l = trainData[0][0].shape[0]
-        if l < 5000:
-            pathFindLevel = 0.5
-        elif l < 20000:
-            pathFindLevel = 0.3
-        else:
-            pathFindLevel = 0.05
-
+    snakesBestData = DbSnakeData().getBestTop()
     h = 2
     while h+15 < FIELD_HEIGHT:
         w = 2
         while w+5 < FIELD_WIDTH:
-            if random() > 0.05: #pathFindLevel:
+            if len(snakesBestData) > 0:
                 col = Color(randint(70, 230), 0, randint(70, 230))
-                field.addSnakeToField(Snake([(w, h+k) for k in range(5)],  BrainSimpleNN.getNewTrinedBrain(
-                    viewRadius, trainData), Direction.UP, col))
+                snakeData = snakesBestData[randint(0, len(snakesBestData)-1)]
+                field.addSnakeToField(Snake([(w, h+k) for k in range(7)],  BrainSimpleNN(
+                    snakeData["viewRadius"], SimpleNN.decode(snakeData['data']),mse=snakeData["mse"]), Direction.UP, col))
             else:
                 col = Color(0, randint(150, 200), 0)
                 field.addSnakeToField(Snake([(w, h+k) for k in range(5)],  BrainPathFind(
                     viewRadius), Direction.UP, col))
-
             w += 5
         h += 15
 
@@ -151,8 +133,7 @@ def calculateOne(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo: 
     if not running:
         return
 
-    aliveSnakesNN = [sn for sn in field.snakes if sn._brain._model is not None]
-    if len(field.snakes) == 0 or field.age >= 1000 or len(aliveSnakesNN) == 0:
+    if len(field.snakes) == 0 or field.age >= 1000:
         dbo = DbTrainData()
         countDB = dbo.countTable(TrainData)
 

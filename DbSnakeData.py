@@ -1,9 +1,10 @@
 import datetime
-from sqlalchemy import Float, create_engine, UniqueConstraint, distinct
+from sqlalchemy import Float, create_engine, UniqueConstraint, distinct, inspect
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Session
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.sql import func
+from sqlalchemy.dialects.sqlite import insert
 
 # https://metanit.com/python/database/3.3.php
 
@@ -21,15 +22,17 @@ class BrainAi(Base):
     config = Column(String,  nullable=False)
     data = Column(String, nullable=False)
     mse = Column(Float, nullable=False)
-    totalAge = Column(Integer, nullable=False,  server_default="0")
-    countSteps = Column(Integer, nullable=False,
-                        server_default="0", index=True)
-    countEat = Column(Integer, nullable=False,  server_default="0", index=True)
-    countStay = Column(Integer, nullable=False,  server_default="0")
-    countGiveBirth = Column(Integer, nullable=False,  server_default="0")
-    createdOn = Column(DateTime(), nullable=False, server_default=func.now())
+    totalAge = Column(Integer, nullable=False, default=0,  server_default="0")
+    countEat = Column(Integer, nullable=False, default=0,
+                      server_default="0", index=True)
+    countStay = Column(Integer, nullable=False,
+                       default=0, server_default="0")
+    countGiveBirth = Column(Integer, nullable=False,
+                            default=0, server_default="0")
+    createdOn = Column(DateTime(), nullable=False,
+                       default=datetime.datetime.now,  server_default=func.now())
     updatedOn = Column(DateTime(), nullable=False,
-                       server_default=func.now(),  server_onupdate=func.now())
+                       default=datetime.datetime.now, server_default=func.now(),  onupdate=datetime.datetime.now, server_onupdate=func.now())
     __table_args__ = (
         UniqueConstraint(data),
     )
@@ -52,22 +55,36 @@ class DbSnakeData():
         with Session(autoflush=False, bind=self._engine) as db:
             return db.query(tableClass).count()
 
-    def saveNN(self, info: dict, viewRadius: int, mse: float):
-        # newNN =  SimpleNN.decode(s)
+    def getBestTop(self, countRecords: int = 200) -> list:
         with Session(autoflush=False, bind=self._engine) as db:
-            record = db.query(BrainAi).filter(
-                BrainAi.data == info["data"]).first()
-            if record is None:
-                db.add(BrainAi(config=info["config"],
-                       data=info["data"], viewRadius=viewRadius, mse=mse))
-                db.commit()
-            else:
-                pass
-
-
-    def getBestTop(self,countRecords: int = 200)->list:
-        with Session(autoflush=False, bind=self._engine) as db:
-            records = db.query(BrainAi).order_by(BrainAi.mse.asc()).limit(countRecords).all()
+            records = db.query(BrainAi).order_by(
+                BrainAi.mse.asc()).limit(countRecords).all()
             return [r.__dict__ for r in records]
 
+    def saveNN(self, info: dict):
+        # newNN =  SimpleNN.decode(s)
+        with Session(autoflush=False, bind=self._engine) as db:
+            columns = [column.name for column in inspect(BrainAi).c]
+            # '['id', 'viewRadius', 'config', 'data', 'mse', 'totalAge', 'countEat', 'countStay', 'countGiveBirth', 'createdOn', 'updatedOn']'
 
+            if "id" in info and info["id"] is not None:
+                record = db.query(BrainAi).filter(
+                    BrainAi.id == info["id"]).first()
+            else:
+                record = db.query(BrainAi).filter(
+                    BrainAi.data == info["data"]).first()
+
+            if record is None:
+                b = BrainAi(**info)
+                db.add(b)
+                db.commit()
+            else:
+                if "totalAge" in info:
+                    record.totalAge += info["totalAge"]
+                if "countEat" in info:
+                    record.countEat += info["countEat"]
+                if "countStay" in info:
+                    record.countStay += info["countStay"]
+                if "countGiveBirth" in info:
+                    record.countGiveBirth += info["countGiveBirth"]
+                db.commit()

@@ -2,6 +2,7 @@ import json
 import numpy as np
 from Brains.BrainBase import BrainBase
 from Color import COLOR_EMPTY, Color
+from DbSnakeData import DbSnakeData
 from Enums.Direction import Direction
 from Enums.MoveDirection import MoveDirection
 from Enums.PointType import PointType
@@ -87,6 +88,7 @@ class Snake:
     def len(self) -> int: return len(self._body)
 
     def die(self, setPoint):
+        self._saveInfo()        
         for p in self._body:
             setPoint(p, PointType.EMPTY, COLOR_EMPTY.toHTMLColor)
         self._body = list()
@@ -186,3 +188,19 @@ class Snake:
             self._removeTail(setPoint)
         # addSnakeToField(
         #     Snake(body, self._brain, Direction.UP, self.color.darker(0.9)))
+
+    def _saveInfo(self):
+        if type(self._brain).__name__ != "BrainSimpleNN":
+            return
+        info = self._brain._model.info()
+        info["viewRadius"] = self._brain._viewRadius
+        info["mse"] = self._brain._mse
+        info["totalAge"] = self._age
+        info["countEat"]= self._countEat
+        info["countStay"]= self._countStay
+        info["countGiveBirth"]= self._countGiveBirth
+
+        dbo=DbSnakeData()
+        dbo.saveNN(info)
+
+

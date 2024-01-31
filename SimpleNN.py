@@ -68,10 +68,12 @@ class LayerExtended(Layer):
     weights: np.array = None
     val: np.array = None
     valActivated: np.array = None
+    gradients: np.array = None
 
 
 class SimpleNN:
-    def __init__(self, layers: list, learningRate: float = 0.01):
+    def __init__(self, layers: list, id: int = None, learningRate: float = 0.01):
+        self._id = id
         self._learningRate = learningRate
         self._layers = list()
 
@@ -168,27 +170,10 @@ class SimpleNN:
             d["useBias"] = layer.useBias
             l.append(d)
 
-        w = dict()
-        w["weigthAvg"] = json.dumps([round(l.weights.mean(), 6)
-                                     for l in self._layers if l.weights is not None])
-        w["weigthMin"] = json.dumps([round(l.weights.min(), 6)
-                                     for l in self._layers if l.weights is not None])
-        w["weigthMax"] = json.dumps([round(l.weights.max(), 6)
-                                     for l in self._layers if l.weights is not None])
-
-        b = dict()
-        b["weigthAvg"] = json.dumps([round(l.bias.mean(), 6)
-                                     for l in self._layers if l.bias is not None])
-        b["weigthMin"] = json.dumps([round(l.bias.min(), 6)
-                                     for l in self._layers if l.bias is not None])
-        b["weigthMax"] = json.dumps([round(l.bias.max(), 6)
-                                     for l in self._layers if l.bias is not None])
-
         d = dict()
         d["config"] = json.dumps(l).replace(" ", "")
-        d["weigths"] = json.dumps(w).replace(" ", "")
-        d["bias"] = json.dumps(b).replace(" ", "")
         d["data"] = self.encode()
+        d["id"] = self._id
         return d
 
     @staticmethod

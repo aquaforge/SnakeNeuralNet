@@ -6,10 +6,9 @@ from SimpleNN import ActivationRelu, Layer, SimpleNN
 
 
 class BrainSimpleNN (BrainBase):
-    def __init__(self, viewRadius: int, model: SimpleNN, numTrainings: int = 0, mse: float = 0):
+    def __init__(self, viewRadius: int, model: SimpleNN, mse: float = 0):
         super().__init__(viewRadius)
         self._model = model
-        self._numTrainings = numTrainings
         self._mse = mse
 
     def getDirection(self, input_vector: np.array) -> MoveDirection:
@@ -47,4 +46,4 @@ class BrainSimpleNN (BrainBase):
 
         mse = SimpleNN.mseLoss(y_test, pred)
 
-        return BrainSimpleNN(viewRadius, model, numTrainings, mse)
+        return BrainSimpleNN(viewRadius, model, mse)

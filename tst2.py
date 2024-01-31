@@ -7,33 +7,38 @@ from DbSnakeData import DbSnakeData
 from DbTrainData import DbTrainData
 from Enums.MoveDirection import MoveDirection
 
+
 def dtNow():
     return datetime.now().strftime("%H:%M:%S")
 
-for viewRadius in range(7, 12):
-    dbo = DbTrainData()
-    distinctRadius = dbo.getDistinctViewRatius()
-    if len(distinctRadius) == 0:
-        print(dtNow(), "no data")
-    else:
-        trainData = list()
-        for i in distinctRadius:
+dbo = DbTrainData()
+distinctRadius = dbo.getDistinctViewRadius()
+if len(distinctRadius) == 0:
+    print(dtNow(), "no data")
+else:
+    trainData = list()
+    for i in distinctRadius:
+        if i < 3:
             td = (dbo.getTrainData(i, 20000),
-                  dbo.getTrainData(i, 1000))
+                    dbo.getTrainData(i, 1000))
             if td[0][0] is not None:
                 trainData.append((i, td))
-            print(dtNow(), "data",i)
+            print(dtNow(), "data", i)
 
-        if len(trainData) > 0:
-            print(datetime.now(), "data loaded")
-            dbo = DbSnakeData()
-            for i in range(1000):
-                viewRadius, td = trainData[randint(1, len(trainData)-1)]
-                b = BrainSimpleNN.getNewTrainedBrain(viewRadius, td)
-                if b._mse < 0.12:
-                    dbo.saveNN(b._model.info(), viewRadius,  b._mse)
-                print(dtNow(), viewRadius, i, b._mse)
-            print(dtNow(), "done")
+if len(trainData) > 0:
+    print(dtNow(), "data loaded")
+    dbo = DbSnakeData()
+    for i in range(200):
+        viewRadius, td = trainData[0] # trainData[randint(1, len(trainData)-1)]
+        b = BrainSimpleNN.getNewTrainedBrain(viewRadius, td)
+        if b._mse < 0.12:
+            info = b._model.info()
+            info["mse"] = b._mse
+            info["viewRadius"] = b._viewRadius
+            dbo.saveNN(info)
+        print(dtNow(), i, viewRadius, b._mse)
+
+print(dtNow(), "done")
 
 # from math import cos, sin
 # from random import random

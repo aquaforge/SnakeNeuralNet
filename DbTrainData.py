@@ -67,7 +67,7 @@ class DbTrainData():
             y = np.array([p[0] for p in y])
             return (x, y)
 
-    def getDistinctViewRatius(self)->list:
+    def getDistinctViewRadius(self)->list:
         with Session(autoflush=False, bind=self._engine) as db:
             records = db.query(distinct(TrainData.viewSize)).all()
             return sorted([r[0] for r in records])

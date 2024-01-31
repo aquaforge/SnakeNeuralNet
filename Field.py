@@ -118,20 +118,21 @@ class Field:
         self.addFood()
 
         if len(Snake.pathData) > 1000:
+            self._saveToDB()
+
+    def _saveToDB(self):
+        if len(Snake.pathData) > 0:
             l = list(Snake.pathData.values()).copy()
             Snake.pathData = dict()
-            self._saveToDB(l)
-
-    def _saveToDB(self, l):
-        dbo = DbTrainData()
-        dbo.addBulkTrainData(l)
+            dbo = DbTrainData()
+            dbo.addBulkTrainData(l)
 
     def getAverageRank(self) -> list:
         r = dict()
         for i in range(2, 15):
             l = [sn.rankPersent for sn in self._snakes if sn.viewRadius == i]
             if len(l) > 0:
-                r[i]=round(mean(l), 2)
+                r[i] = round(mean(l), 2)
         return sorted(r.items(), key=lambda item: item[0])
 
     def __del__(self):
@@ -162,7 +163,8 @@ class Field:
                     pass  # raise
 
             for i, p in enumerate(snake.body):
-                self.setPoint(p, (PointType.SNAKE_HEAD if i==0 else PointType.SNAKE), snake.getColorByBodyId(i))
+                self.setPoint(p, (PointType.SNAKE_HEAD if i ==
+                              0 else PointType.SNAKE), snake.getColorByBodyId(i))
 
             self._snakes.add(snake)
             # self.selectedSnake = snake

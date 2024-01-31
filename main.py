@@ -53,17 +53,25 @@ def initializeAll(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo:
     field = Field(FIELD_WIDTH, FIELD_HEIGHT)
     viewRadius = 8  # randint(4, 9)
 
-    snakesBestData = DbSnakeData().getBestTop()
+    if False:
+        snakesBestData = DbSnakeData().getBestTop(5000)
+    else:
+        snakesBestData = None
+
     h = 2
     while h+15 < FIELD_HEIGHT:
         w = 2
         while w+5 < FIELD_WIDTH:
-            if len(snakesBestData) > 0:
+            if snakesBestData is not None and len(snakesBestData) > 0:
                 col = Color(randint(70, 230), 0, randint(70, 230))
                 snakeData = snakesBestData[randint(0, len(snakesBestData)-1)]
                 field.addSnakeToField(Snake([(w, h+k) for k in range(7)],  BrainSimpleNN(
-                    snakeData["viewRadius"], SimpleNN.decode(snakeData['data']),mse=snakeData["mse"]), Direction.UP, col))
+                    snakeData["viewRadius"], SimpleNN.decode(snakeData['data']), mse=snakeData["mse"]), Direction.UP, col))
             else:
+                if random() < 0.3:
+                    viewRadius = 1
+                else:
+                    viewRadius = randint(13, 15)
                 col = Color(0, randint(150, 200), 0)
                 field.addSnakeToField(Snake([(w, h+k) for k in range(5)],  BrainPathFind(
                     viewRadius), Direction.UP, col))
@@ -133,7 +141,7 @@ def calculateOne(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo: 
     if not running:
         return
 
-    if len(field.snakes) == 0 or field.age >= 1000:
+    if len(field.snakes) == 0 or field.age >= 500:
         dbo = DbTrainData()
         countDB = dbo.countTable(TrainData)
 
@@ -141,6 +149,7 @@ def calculateOne(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo: 
         # pathfind 3="5.49"  4="6.59"  5="6.69"  6="7.81"  7="8.83"  8="7.19"  9="7.29"
         print(f"epoch={epochCount}", f"DB={countDB}", "  ".join(
             [f"{k}=\"{v}\"" for k, v in field.getAverageRank()]))
+        field._saveToDB()
         initializeAll(root, canvasField,  canvasHead, snakeInfo)
     else:
         start = datetime.now()

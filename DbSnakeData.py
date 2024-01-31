@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import Float, create_engine, UniqueConstraint
+from sqlalchemy import Float, create_engine, UniqueConstraint, distinct
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Session
 from sqlalchemy import Column, Integer, String, DateTime
@@ -69,3 +69,5 @@ class DbSnakeData():
         with Session(autoflush=False, bind=self._engine) as db:
             records = db.query(BrainAi).order_by(BrainAi.mse.asc()).limit(countRecords).all()
             return [r.__dict__ for r in records]
+
+

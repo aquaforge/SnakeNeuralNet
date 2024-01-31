@@ -6,7 +6,7 @@ from SimpleNN import ActivationRelu, Layer, SimpleNN
 
 
 class BrainSimpleNN (BrainBase):
-    def __init__(self, viewRadius: int, model: SimpleNN, numTrainings: int=0, mse:float=0):
+    def __init__(self, viewRadius: int, model: SimpleNN, numTrainings: int = 0, mse: float = 0):
         super().__init__(viewRadius)
         self._model = model
         self._numTrainings = numTrainings
@@ -24,21 +24,26 @@ class BrainSimpleNN (BrainBase):
 
         l = list()
         l.append(Layer(nodesCount=size))
-        l.append(Layer(nodesCount=size//2, activationClass=ActivationRelu, useBias=True))
-        l.append(Layer(nodesCount=len(MoveDirection),activationClass=ActivationRelu, useBias=True))
+        l.append(Layer(nodesCount=int(size/(1.5+random())),
+                 activationClass=ActivationRelu, useBias=random() > 0.5))
+        if random() > 0.5:
+            l.append(Layer(nodesCount=int(size/(2.6+random())),
+                     activationClass=ActivationRelu, useBias=random() > 0.5))
+        l.append(Layer(nodesCount=len(MoveDirection),
+                 activationClass=ActivationRelu, useBias=random() > 0.5))
         model = SimpleNN(layers=l, learningRate=0.01)
 
         if x_train is None or y_train is None:
             return BrainSimpleNN(viewRadius, model, 0)
 
-        numTrainings = randint(30000, 120000)
+        numTrainings = randint(50000, 120000)
         for _ in range(numTrainings):
-            k = randint(0,x_train.shape[0]-1)
-            model.train(x_train[k,:,:], y_train[k,:])
+            k = randint(0, x_train.shape[0]-1)
+            model.train(x_train[k, :, :], y_train[k, :])
 
         pred = np.empty(shape=y_test.shape)
         for i in range(y_test.shape[0]):
-            pred[i,:] = model.predict(x_test[i,:,:]).reshape(pred.shape[1])
+            pred[i, :] = model.predict(x_test[i, :, :]).reshape(pred.shape[1])
 
         mse = SimpleNN.mseLoss(y_test, pred)
 

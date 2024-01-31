@@ -1,7 +1,7 @@
 import datetime
 import json
 import numpy as np
-from sqlalchemy import create_engine, func
+from sqlalchemy import create_engine, distinct, func
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Session
 from sqlalchemy import Column, Integer, String
@@ -66,3 +66,8 @@ class DbTrainData():
             y = [(p[0][:p[1]] + [1] + p[0][p[1]+1:], p[1]) for p in y]
             y = np.array([p[0] for p in y])
             return (x, y)
+
+    def getDistinctViewRatius(self)->list:
+        with Session(autoflush=False, bind=self._engine) as db:
+            records = db.query(distinct(TrainData.viewSize)).all()
+            return sorted([r[0] for r in records])

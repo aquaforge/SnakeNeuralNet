@@ -55,9 +55,16 @@ class DbSnakeData():
         with Session(autoflush=False, bind=self._engine) as db:
             return db.query(tableClass).count()
 
+
+# SELECT  100.0*countEat/totalAge, *
+#   FROM BrainAi
+#   where totalAge <>0
+#   order by 1 desc;
+
     def getBestTop(self, countRecords: int = 200) -> list:
         with Session(autoflush=False, bind=self._engine) as db:
-            records = db.query(BrainAi).where(BrainAi.viewRadius != 2).order_by(
+            # .where(BrainAi.viewRadius != 2 and BrainAi.mse <= 0.1)
+            records = db.query(BrainAi).order_by(
                 BrainAi.mse.asc()).limit(countRecords).all()
             return [r.__dict__ for r in records]
 

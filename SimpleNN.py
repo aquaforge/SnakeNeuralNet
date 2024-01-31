@@ -129,8 +129,9 @@ class SimpleNN:
         '''inputData shape (60000,786)  targetData shape (60000,10)'''
         for e in range(epochs):
             pass
-
+     
     def train(self, inputVector, targetVector):
+        self._id = None
         inputVector = np.array(inputVector).reshape(
             self._layers[0].nodesCount, 1)
         targetVector = np.array(targetVector).reshape(

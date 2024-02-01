@@ -189,7 +189,7 @@ class Snake:
         # addSnakeToField(
         #     Snake(body, self._brain, Direction.UP, self.color.darker(0.9)))
 
-    def _saveInfo(self):
+    def _saveInfo(self, survived=False):
         if type(self._brain).__name__ != "BrainSimpleNN":
             return
         info = self._brain._model.info()
@@ -199,6 +199,8 @@ class Snake:
         info["countEat"]= self._countEat
         info["countStay"]= self._countStay
         info["countGiveBirth"]= self._countGiveBirth
+        if survived:
+            info["countSurvived"] = 1
 
         dbo=DbSnakeData()
         dbo.saveNN(info)

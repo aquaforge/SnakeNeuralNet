@@ -149,7 +149,7 @@ def calculateOne(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo: 
             [f"{k}=\"{v}\"" for k, v in field.getAverageRank()]))
         field._saveToDB()
         for snake in field.snakes:
-            snake._saveInfo()
+            snake._saveInfo(survived=True)
 
         initializeAll(root, canvasField,  canvasHead, snakeInfo)
     else:

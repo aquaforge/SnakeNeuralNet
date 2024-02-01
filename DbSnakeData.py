@@ -29,10 +29,14 @@ class BrainAi(Base):
                        default=0, server_default="0")
     countGiveBirth = Column(Integer, nullable=False,
                             default=0, server_default="0")
+    countSurvived = Column(Integer, nullable=False, default=0,
+                      server_default="0")
+
     createdOn = Column(DateTime(), nullable=False,
                        default=datetime.datetime.now,  server_default=func.now())
     updatedOn = Column(DateTime(), nullable=False,
                        default=datetime.datetime.now, server_default=func.now(),  onupdate=datetime.datetime.now, server_onupdate=func.now())
+    
     __table_args__ = (
         UniqueConstraint(data),
     )
@@ -100,4 +104,6 @@ class DbSnakeData():
                     record.countStay += info["countStay"]
                 if "countGiveBirth" in info:
                     record.countGiveBirth += info["countGiveBirth"]
+                if "countSurvived" in info:
+                    record.countSurvived += info["countSurvived"]
                 db.commit()

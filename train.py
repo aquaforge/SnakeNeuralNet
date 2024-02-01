@@ -17,12 +17,16 @@ def save():
     global infoList
 
     if len(infoList) > 0:
-        dbo = DbSnakeData()
-        for info in infoList:
-            dbo.saveNN(info)
-        dbo = None
-        infoList = list()
-        print(dtNow(), "saved")
+        try:
+            dbo = DbSnakeData()
+            for info in infoList:
+                dbo.saveNN(info)
+            dbo = None
+            infoList = list()
+            print(dtNow(), "saved")
+        except Exception as e:
+            print(dtNow(), e)
+
 
 
 dbo = DbTrainData()

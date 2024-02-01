@@ -74,7 +74,7 @@ def initializeAll(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo:
                 field.addSnakeToField(Snake([(w, h+k) for k in range(7)],  BrainSimpleNN(
                     snakeData["viewRadius"], nn, mse=snakeData["mse"]), Direction.UP, col))
             else:
-                viewRadius = randint(1, 15)
+                viewRadius = randint(1,6)
                 col = Color(0, randint(150, 200), 0)
                 field.addSnakeToField(Snake([(w, h+k) for k in range(5)],  BrainPathFind(
                     viewRadius), Direction.UP, col))
@@ -91,12 +91,6 @@ def initializeAll(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo:
 
 
 '''
-запускать разного цвета
- - часть обученных змеек с поиском пути
- - часть обученных змеек с нейронкой (НС) из подготовленного списка или быстро обучить как-то или рандомно
-сохранять 
-- данные для обучения
-- обученные НС с snake.age + eatCount (totalAge, eatCount)
 
 ---------------Path find snake algorythm: eatCount/age % by viewRadius------------------------------------------------------
 FIELD_WIDTH = 100

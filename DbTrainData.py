@@ -1,7 +1,7 @@
 import datetime
 import json
 import numpy as np
-from sqlalchemy import create_engine, distinct, func
+from sqlalchemy import and_, create_engine, distinct, func
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Session
 from sqlalchemy import Column, Integer, String
@@ -54,20 +54,20 @@ class DbTrainData():
 
     def getTrainData(self, viewRadius: int, countRecords: int = 20000) -> tuple:
         with Session(autoflush=False, bind=self._engine) as db:
-            records = db.query(TrainData).filter(TrainData.viewSize == viewRadius).order_by(
+            records = db.query(TrainData).filter(and_(TrainData.viewSize == viewRadius, TrainData.hasFood == 1)).order_by(
                 func.random()).limit(countRecords).all()
-            if len(records)==0:
+            if len(records) == 0:
                 return (None, None)
 
             x = [json.loads(r.path) for r in records]
             x = np.array(x)
-            
+
             y = [([0]*len(MoveDirection), r.result) for r in records]
             y = [(p[0][:p[1]] + [1] + p[0][p[1]+1:], p[1]) for p in y]
             y = np.array([p[0] for p in y])
             return (x, y)
 
-    def getDistinctViewRadius(self)->list:
+    def getDistinctViewRadius(self) -> list:
         with Session(autoflush=False, bind=self._engine) as db:
             records = db.query(distinct(TrainData.viewSize)).all()
             return sorted([r[0] for r in records])

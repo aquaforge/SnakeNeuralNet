@@ -94,12 +94,6 @@ class SimpleNN:
                                               activationClass=layer.activationClass, useBias=layer.useBias, bias=b, weights=w))
 
     def predict(self, inputVector):
-        # print(inputVector.reshape(5, 5))
-        inputVector[inputVector == -3] = -1
-        inputVector[inputVector == -2] = -1
-        inputVector = 0.999 * inputVector.astype(np.float32)
-        # print(inputVector.reshape(5, 5))
-
         inputVector = np.array(inputVector).reshape(
             self._layers[0].nodesCount, 1)
         self._layers[0].val = inputVector
@@ -114,6 +108,8 @@ class SimpleNN:
                 val)
         return self._layers[-1].valActivated
 
+   
+
     def clearTemp(self):
         for i in range(1, len(self._layers)):
             self._layers[i].val = None
@@ -125,11 +121,6 @@ class SimpleNN:
     def mseLoss(y_true, y_pred):
         return ((np.array(y_true) - np.array(y_pred)) ** 2).mean()
 
-    def trainEpoch(self, inputData: np.array, targetData: np.array, epochs: int = 1):
-        '''inputData shape (60000,786)  targetData shape (60000,10)'''
-        for e in range(epochs):
-            pass
-     
     def train(self, inputVector, targetVector):
         self._id = None
         inputVector = np.array(inputVector).reshape(

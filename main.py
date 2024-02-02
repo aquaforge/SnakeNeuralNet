@@ -57,7 +57,7 @@ def initializeAll(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo:
     viewRadius = 8  # randint(4, 9)
 
     if True:
-        snakesBestData = DbSnakeData().getBestTop(5000)
+        snakesBestData = DbSnakeData().getBestTop(500)
     else:
         snakesBestData = None
 

@@ -30,13 +30,15 @@ class BrainAi(Base):
     countGiveBirth = Column(Integer, nullable=False,
                             default=0, server_default="0")
     countSurvived = Column(Integer, nullable=False, default=0,
-                      server_default="0")
+                           server_default="0")
+    countStart = Column(Integer, nullable=False, default=0,
+                           server_default="0")
 
     createdOn = Column(DateTime(), nullable=False,
                        default=datetime.datetime.now,  server_default=func.now())
     updatedOn = Column(DateTime(), nullable=False,
                        default=datetime.datetime.now, server_default=func.now(),  onupdate=datetime.datetime.now, server_onupdate=func.now())
-    
+
     __table_args__ = (
         UniqueConstraint(data),
     )
@@ -60,22 +62,41 @@ class DbSnakeData():
             return db.query(tableClass).count()
 
     '''
-    SELECT  100.0*countEat/totalAge, *
-    FROM BrainAi
-    where totalAge <>0
-    order by 1 desc;
+ SELECT  100.0*countEat/totalAge as rank, *
+   FROM BrainAi
+   where totalAge > 0
+   order by countSurvived desc, rank desc;
             
 
     SELECT viewSize, COUNT(*)
     FROM TrainData
     GROUP by viewSize        
+
+    results = db.session.query(MyTable.caller, MyTable.callee,
+                               db.func.count(db.func.CASE([(MyTable.success, 1)], else_=None))).label('success_count'),
+                               db.func.count(MyTable.caller).label('total_count'),
+                               db.func.count(db.func.CASE([(MyTable.success, 1)], else_=None)) * 1.0 /
+                               db.func.count(MyTable.caller)).label('success_ratio')).\
+        group_by(MyTable.caller, MyTable.callee).\
+        order_by(db.desc('success_ratio')).all()
+
+ result_exp = sqlalchemy.sql.expression.label('result',
+   ((test2_table.c.a * test2_table.c.b)
+    - (test2_table.c.x + test2_table.c.y)
+    / test2_table.c.z))
+select([result_exp], from_obj=[test2_table], order_by="result")       
+
+
     '''
-  
-    def getBestTop(self, countRecords: int = 200) -> list:
+
+    def getBestTop(self, countRecords: int = 500) -> list:
         with Session(autoflush=False, bind=self._engine) as db:
             # .where(BrainAi.viewRadius != 2 and BrainAi.mse <= 0.1)
-            records = db.query(BrainAi).order_by(
-                BrainAi.mse.asc()).limit(countRecords).all()
+            records = db.query(BrainAi).filter(BrainAi.totalAge < 2000).order_by(
+                BrainAi.totalAge.asc()).limit(countRecords).all()
+            if len(records) == 0:
+                records = db.query(BrainAi).order_by(
+                    func.random()).limit(countRecords).all()
             return [r.__dict__ for r in records]
 
     def saveNN(self, info: dict):
@@ -106,4 +127,11 @@ class DbSnakeData():
                     record.countGiveBirth += info["countGiveBirth"]
                 if "countSurvived" in info:
                     record.countSurvived += info["countSurvived"]
+
+                if "countStart" in info:
+                    record.countStart += info["countStart"]
+                else:
+                    record.countStart += 1
+
+
                 db.commit()

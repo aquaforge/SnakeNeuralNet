@@ -14,16 +14,15 @@ from Field import Field
 from FieldScene import FieldScene
 from DbTrainData import TrainData, DbTrainData
 
-
 # pip freeze > requirements.txt
 # pip install -r requirements.txt
 # https://metanit.com/python/database/3.1.php
 
 # https://ru.hexlet.io/blog/posts/19-bibliotek-dlya-python?ysclid=lrus9b9ejh622626382
 
-FIELD_WIDTH = 102*2
-FIELD_HEIGHT = 57*2
-CANVAS_BLOCK_SIZE = 8 #15
+FIELD_WIDTH = 102 * 2
+FIELD_HEIGHT = 57 * 2
+CANVAS_BLOCK_SIZE = 8  # 15
 
 # FIELD_WIDTH = 102
 # FIELD_HEIGHT = 57
@@ -41,15 +40,12 @@ fieldScene = None
 epochCount = 0
 
 
-
-
-def initializeAll(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo: Text):
+def initializeAll(root: Tk, canvasField: Canvas, canvasHead: Canvas, snakeInfo: Text):
     global running
     global field
     global fieldScene
     global paused
     global epochCount
-
 
     epochCount += 1
 
@@ -62,21 +58,21 @@ def initializeAll(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo:
         snakesBestData = None
 
     h = 2
-    while h+15 < FIELD_HEIGHT:
+    while h + 15 < FIELD_HEIGHT:
         w = 2
-        while w+5 < FIELD_WIDTH:
+        while w + 5 < FIELD_WIDTH:
             if snakesBestData is not None and len(snakesBestData) > 0:
                 col = Color(randint(70, 230), randint(
                     70, 230), randint(70, 230))
-                snakeData = snakesBestData[randint(0, len(snakesBestData)-1)]
+                snakeData = snakesBestData[randint(0, len(snakesBestData) - 1)]
                 nn = SimpleNN.decode(snakeData['data'])
                 nn._id = snakeData['id']
-                field.addSnakeToField(Snake([(w, h+k) for k in range(7)],  BrainSimpleNN(
+                field.addSnakeToField(Snake([(w, h + k) for k in range(7)], BrainSimpleNN(
                     snakeData["viewRadius"], nn, mse=snakeData["mse"]), Direction.UP, col))
             else:
-                viewRadius = randint(1,6)
+                viewRadius = randint(1, 6)
                 col = Color(0, randint(150, 200), 0)
-                field.addSnakeToField(Snake([(w, h+k) for k in range(5)],  BrainPathFind(
+                field.addSnakeToField(Snake([(w, h + k) for k in range(5)], BrainPathFind(
                     viewRadius), Direction.UP, col))
             w += 5
         h += 15
@@ -87,7 +83,7 @@ def initializeAll(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo:
 
     fieldScene.drawAll()
 
-    root.after(500, calculateOne, root, canvasField,  canvasHead, snakeInfo)
+    root.after(500, calculateOne, root, canvasField, canvasHead, snakeInfo)
 
 
 '''
@@ -129,13 +125,12 @@ epoch=30 DB=1397474 2="5.07"  3="5.49"  4="5.8"  5="7.22"  6="8.0"  7="8.28"  8=
 '''
 
 
-def calculateOne(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo: Text):
+def calculateOne(root: Tk, canvasField: Canvas, canvasHead: Canvas, snakeInfo: Text):
     global running
     global field
     global fieldScene
     global paused
     global epochCount
-
 
     if not running:
         return
@@ -151,20 +146,18 @@ def calculateOne(root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo: 
         for snake in field.snakes:
             snake._saveInfo(survived=True)
 
-        initializeAll(root, canvasField,  canvasHead, snakeInfo)
+        initializeAll(root, canvasField, canvasHead, snakeInfo)
     else:
         start = datetime.now()
         if not paused:
             field.doOneStep()
 
-
         fieldScene.drawAll()
 
         end = datetime.now()
-        d = int(STEP_DELAY_MS-1000*(end - start).total_seconds())
+        d = int(STEP_DELAY_MS - 1000 * (end - start).total_seconds())
         # print(d)
-        root.after(d if d > 0 else STEP_DELAY_MS, calculateOne,
-                   root, canvasField,  canvasHead, snakeInfo)
+        root.after(d if d > 0 else STEP_DELAY_MS, calculateOne, root, canvasField, canvasHead, snakeInfo)
 
 
 def onWindowKeyPress(e):
@@ -175,7 +168,7 @@ def onWindowKeyPress(e):
 
 
 def onCanvasFieldClick(e):
-    p = (e.x//CANVAS_BLOCK_SIZE, e.y//CANVAS_BLOCK_SIZE)
+    p = (e.x // CANVAS_BLOCK_SIZE, e.y // CANVAS_BLOCK_SIZE)
     field.selectSnakeByPoint(p)
 
 
@@ -205,13 +198,13 @@ def main():
     frameLeft.grid_rowconfigure(0, weight=1)
 
     frameRight = ttk.Frame(master=root, borderwidth=1, relief=SOLID)
-    frameRight.pack(fill=BOTH, expand=True,  padx=2, pady=2)
+    frameRight.pack(fill=BOTH, expand=True, padx=2, pady=2)
 
     v = ttk.Scrollbar(master=frameRight, orient=VERTICAL)
     h = ttk.Scrollbar(master=frameRight, orient=HORIZONTAL)
 
-    canvasField = Canvas(master=frameRight, scrollregion=(0, 0, FIELD_WIDTH*CANVAS_BLOCK_SIZE,
-                                                          FIELD_HEIGHT*CANVAS_BLOCK_SIZE),
+    canvasField = Canvas(master=frameRight, scrollregion=(0, 0, FIELD_WIDTH * CANVAS_BLOCK_SIZE,
+                                                          FIELD_HEIGHT * CANVAS_BLOCK_SIZE),
                          bg=COLOR_EMPTY.toHTMLColor, yscrollcommand=v.set, xscrollcommand=h.set)
     h["command"] = canvasField.xview
     v["command"] = canvasField.yview
@@ -223,7 +216,7 @@ def main():
     frameRight.grid_rowconfigure(0, weight=1)
     canvasField.bind("<Button-1>", onCanvasFieldClick)
 
-    initializeAll(root, canvasField,  canvasHead, snakeInfo)
+    initializeAll(root, canvasField, canvasHead, snakeInfo)
 
     root.update_idletasks()
     root.mainloop()

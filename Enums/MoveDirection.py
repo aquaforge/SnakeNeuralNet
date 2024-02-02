@@ -1,5 +1,6 @@
 from enum import Enum, unique
 
+
 @unique
 class MoveDirection(Enum):
     STAY = 0
@@ -8,5 +9,4 @@ class MoveDirection(Enum):
     RIGHT = 3
 
     def __int__(self):
-        return self.value    
-
+        return self.value

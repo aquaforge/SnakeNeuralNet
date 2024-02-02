@@ -3,21 +3,22 @@ import numpy as np
 from Enums.MoveDirection import MoveDirection
 
 
-class BrainBase():
+class BrainBase:
     def __init__(self, viewRadius: int):
         self._viewRadius = viewRadius
-        self._model=None
+        self._model = None
 
     @property
-    def viewRadius(self): return self._viewRadius
+    def viewRadius(self):
+        return self._viewRadius
 
     def getDirection(self, view: np.array) -> MoveDirection:
         '''view: np 2D matrix'''
-        if view[self._viewRadius, self._viewRadius-1] != -1:
+        if view[self._viewRadius, self._viewRadius - 1] != -1:
             return MoveDirection.FORWARD
-        elif view[self._viewRadius-1, self._viewRadius] != -1:
+        elif view[self._viewRadius - 1, self._viewRadius] != -1:
             return MoveDirection.LEFT
-        elif view[self._viewRadius+1, self._viewRadius] != -1:
+        elif view[self._viewRadius + 1, self._viewRadius] != -1:
             return MoveDirection.RIGHT
         else:
             return MoveDirection.STAY

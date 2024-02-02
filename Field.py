@@ -12,7 +12,7 @@ class Field:
         self._width = width  # это слева направо
         self._height = height  # это сверху вниз
 
-        self._maxFoodCount = int(0.01 * width * height) #0.01
+        self._maxFoodCount = int(0.01 * width * height)  # 0.01
         self._foodCount = 0
 
         self._snakes = set()
@@ -31,7 +31,8 @@ class Field:
         self.selectedSnake = None
 
     @property
-    def selectedSnake(self): return self.__selectedSnake
+    def selectedSnake(self):
+        return self.__selectedSnake
 
     @selectedSnake.setter
     def selectedSnake(self, snake: Snake):
@@ -66,12 +67,14 @@ class Field:
                 self.__fieldData[p[0]][p[1]] = (pt, colorHTML)
                 return
 
-            if ptOld == PointType.FOOD and pt in (PointType.EMPTY, PointType.SNAKE, PointType.WALL, PointType.SNAKE_HEAD):
+            if ptOld == PointType.FOOD and pt in (
+            PointType.EMPTY, PointType.SNAKE, PointType.WALL, PointType.SNAKE_HEAD):
                 self._foodCount -= 1
                 self.__fieldData[p[0]][p[1]] = (pt, colorHTML)
                 return
 
-            if pt == PointType.FOOD and ptOld in (PointType.EMPTY, PointType.SNAKE, PointType.WALL, PointType.SNAKE_HEAD):
+            if pt == PointType.FOOD and ptOld in (
+            PointType.EMPTY, PointType.SNAKE, PointType.WALL, PointType.SNAKE_HEAD):
                 self._foodCount += 1
                 self.__fieldData[p[0]][p[1]] = (pt, colorHTML)
                 return
@@ -79,25 +82,32 @@ class Field:
             self.__fieldData[p[0]][p[1]] = (pt, colorHTML)
 
     @property
-    def foodCount(self): return self._foodCount
+    def foodCount(self):
+        return self._foodCount
 
     @property
-    def width(self): return self._width
+    def width(self):
+        return self._width
 
     @property
-    def height(self): return self._height
+    def height(self):
+        return self._height
 
     @property
-    def age(self): return self._age
+    def age(self):
+        return self._age
 
     @property
-    def food(self): return self._food
+    def food(self):
+        return self._food
 
     @property
-    def snakes(self): return self._snakes
+    def snakes(self):
+        return self._snakes
 
     @property
-    def needRedraw(self): return self._needRedraw
+    def needRedraw(self):
+        return self._needRedraw
 
     def setRedrawed(self):
         self._needRedraw = False
@@ -111,7 +121,7 @@ class Field:
                             self.addSnakeToField)
 
         deletedSnakes = set(snake for snake in self._snakes if (
-            not snake.alive or snake.len == 0))
+                not snake.alive or snake.len == 0))
         if len(deletedSnakes) > 0:
             self._snakes -= deletedSnakes
 
@@ -164,7 +174,7 @@ class Field:
 
             for i, p in enumerate(snake.body):
                 self.setPoint(p, (PointType.SNAKE_HEAD if i ==
-                              0 else PointType.SNAKE), snake.getColorByBodyId(i))
+                                                          0 else PointType.SNAKE), snake.getColorByBodyId(i))
 
             self._snakes.add(snake)
             # self.selectedSnake = snake

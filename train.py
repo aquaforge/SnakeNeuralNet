@@ -13,6 +13,7 @@ infoList = list()
 def dtNow():
     return datetime.now().strftime("%H:%M:%S")
 
+
 def save():
     global infoList
 
@@ -26,7 +27,6 @@ def save():
             print(dtNow(), "saved")
         except Exception as e:
             print(dtNow(), e)
-
 
 
 dbo = DbTrainData()
@@ -46,7 +46,7 @@ dbo = None
 if len(trainData) > 0:
     print(dtNow(), "data loaded")
     for i in range(5000):
-        viewRadius, td = trainData[randint(0, len(trainData)-1)]
+        viewRadius, td = trainData[randint(0, len(trainData) - 1)]
         b = BrainSimpleNN.getNewTrainedBrain(viewRadius, td)
         print(dtNow(), i, viewRadius, b._mse)
         if b._mse < 0.12:

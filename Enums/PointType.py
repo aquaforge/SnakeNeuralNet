@@ -10,5 +10,4 @@ class PointType(Enum):
     FOOD = 1
 
     def __int__(self):
-        return self.value    
-
+        return self.value

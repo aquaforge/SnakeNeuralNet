@@ -10,9 +10,3 @@ class Direction(Enum):
 
     def __int__(self):
         return self.value
-    
-
-
-
-
-

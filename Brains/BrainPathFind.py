@@ -3,18 +3,18 @@ from Brains.BrainBase import BrainBase
 from Enums.MoveDirection import MoveDirection
 
 
-class BrainPathFind (BrainBase):
+class BrainPathFind(BrainBase):
     FOOD_REPLACE = -9  # less than -5
 
     def __init__(self, viewRadius: int):
         super().__init__(viewRadius)
 
     def _getSimpleDirection(self, view: np.array) -> MoveDirection:
-        if view[self._viewRadius, self._viewRadius-1] >=0:
+        if view[self._viewRadius, self._viewRadius - 1] >= 0:
             return MoveDirection.FORWARD
-        elif view[self._viewRadius-1, self._viewRadius] >=0:
+        elif view[self._viewRadius - 1, self._viewRadius] >= 0:
             return MoveDirection.LEFT
-        elif view[self._viewRadius+1, self._viewRadius] >=0:
+        elif view[self._viewRadius + 1, self._viewRadius] >= 0:
             return MoveDirection.RIGHT
         else:
             return MoveDirection.STAY
@@ -29,12 +29,12 @@ class BrainPathFind (BrainBase):
             pf = np.copy(view).T
             pf[pf == 1] = BrainPathFind.FOOD_REPLACE
 
-            #print(pf)
+            # print(pf)
             endPoint = self._prepareWavePath(startPoint, pf)
             if endPoint == None:
                 return self._getSimpleDirection(view)
             else:
-                #print(pf)
+                # print(pf)
                 path = [endPoint[::-1]]
                 p = endPoint
                 stepCounter = 0
@@ -42,17 +42,17 @@ class BrainPathFind (BrainBase):
                     # print(path)
                     stepCounter += 1
                     for i, j in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
-                        n = (p[0]+i, p[1]+j)
-                        if 0<=n[0]<pf.shape[0] and 0<=n[1]<pf.shape[1]:
-                            if pf[n[0], n[1]]+1 == pf[p[0], p[1]]:
-                                path = [n[::-1]]+path
+                        n = (p[0] + i, p[1] + j)
+                        if 0 <= n[0] < pf.shape[0] and 0 <= n[1] < pf.shape[1]:
+                            if pf[n[0], n[1]] + 1 == pf[p[0], p[1]]:
+                                path = [n[::-1]] + path
                                 p = n
                                 break
-                #print(path)
+                # print(path)
                 if len(path) == 1:
                     path
                     # raise
-                (i1,j1), (i2,j2) = path[0], path[1]
+                (i1, j1), (i2, j2) = path[0], path[1]
                 if i1 < i2:
                     return MoveDirection.RIGHT
                 elif i1 > i2:
@@ -75,7 +75,7 @@ class BrainPathFind (BrainBase):
             wave_new = []
             for w in wave:
                 for i, j in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
-                    p = (w[0]+i, w[1]+j)
+                    p = (w[0] + i, w[1] + j)
                     if 0 <= p[0] < pf.shape[0] and 0 <= p[1] < pf.shape[1]:
                         if pf[p[0], p[1]] == BrainPathFind.FOOD_REPLACE:
                             pf[p[0], p[1]] = level
@@ -85,4 +85,3 @@ class BrainPathFind (BrainBase):
                             pf[p[0], p[1]] = level
             wave = wave_new
         return None
-

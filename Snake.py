@@ -9,19 +9,19 @@ from Enums.PointType import PointType
 from NumpyArrayEncoder import NumpyArrayEncoder
 from DbTrainData import DbTrainData
 
-
 HEALTH_STEP = 1.0
 HEALTH_TAIL = 20.0
-TAIL_MIN_LENTH = 2
-TAIL_MAX_LENTH = 16
+TAIL_MIN_LENGTH = 2
+TAIL_MAX_LENGTH = 16
 
 
 class Snake:
-    mapDirectionArrows = {Direction.UP: (0, -1),   Direction.DOWN: (0, 1),
+    mapDirectionArrows = {Direction.UP: (0, -1), Direction.DOWN: (0, 1),
                           Direction.LEFT: (-1, 0), Direction.RIGHT: (1, 0)}
     pathData = dict()
 
-    def __init__(self, body: list, brain: BrainBase, headViewDirection: Direction, color: Color = Color.randomColor(100, 200),  health: float = 100.0):
+    def __init__(self, body: list, brain: BrainBase, headViewDirection: Direction,
+                 color: Color = Color.randomColor(100, 200), health: float = 100.0):
 
         self._body = body
         self._brain = brain
@@ -35,60 +35,73 @@ class Snake:
         self._countGiveBirth = 0
         self._countStay = 0
 
-        self.mapDirectionArrows = {Direction.UP: (0, -1),   Direction.DOWN: (0, 1),
+        self.mapDirectionArrows = {Direction.UP: (0, -1), Direction.DOWN: (0, 1),
                                    Direction.LEFT: (1, 0), Direction.RIGHT: (1, 0)}
 
     def pointIsInSnake(self, point: tuple) -> bool:
         return len([1 for p in self._body if p == point]) > 0
 
     @property
-    def viewRadius(self) -> Direction: return self._brain.viewRadius
+    def viewRadius(self) -> Direction:
+        return self._brain.viewRadius
 
     @property
-    def headViewDirection(self) -> Direction: return self._headView
+    def headViewDirection(self) -> Direction:
+        return self._headView
 
     @property
-    def countGiveBirth(self): return self._countGiveBirth
+    def countGiveBirth(self):
+        return self._countGiveBirth
 
     @property
-    def countStay(self): return self._countStay
+    def countStay(self):
+        return self._countStay
 
     @property
-    def countEat(self): return self._countEat
+    def countEat(self):
+        return self._countEat
 
     @property
     def rankPersent(self) -> float:
         if self._age == 0:
             return 0
         else:
-            return round(100.0 * self._countEat/self._age, 4)
+            return round(100.0 * self._countEat / self._age, 4)
 
     @property
-    def health(self) -> float: return self._health
+    def health(self) -> float:
+        return self._health
 
     @property
-    def color(self) -> Color: return self._color
+    def color(self) -> Color:
+        return self._color
 
     @property
-    def age(self) -> int: return self._age
+    def age(self) -> int:
+        return self._age
 
     @property
-    def alive(self) -> bool: return self._alive
+    def alive(self) -> bool:
+        return self._alive
 
     @property
-    def body(self) -> list: return self._body
+    def body(self) -> list:
+        return self._body
 
     @property
-    def head(self) -> tuple: return self._body[0]
+    def head(self) -> tuple:
+        return self._body[0]
 
     @property
-    def tail(self) -> tuple: return self._body[-1]
+    def tail(self) -> tuple:
+        return self._body[-1]
 
     @property
-    def len(self) -> int: return len(self._body)
+    def len(self) -> int:
+        return len(self._body)
 
     def die(self, setPoint):
-        self._saveInfo()        
+        self._saveInfo()
         for p in self._body:
             setPoint(p, PointType.EMPTY, COLOR_EMPTY.toHTMLColor)
         self._body = list()
@@ -105,7 +118,7 @@ class Snake:
             if bodyId == 0:
                 return self._color.darker().toHTMLColor
             else:
-                return self._color.lighter(bodyId/len(self._body)).toHTMLColor
+                return self._color.lighter(bodyId / len(self._body)).toHTMLColor
         else:
             pass  # raise
 
@@ -113,7 +126,7 @@ class Snake:
         self._age += 1
         self._health -= HEALTH_STEP
         if self._health <= 0.0:
-            if len(self._body) > TAIL_MIN_LENTH:
+            if len(self._body) > TAIL_MIN_LENGTH:
                 self._removeTail(setPoint)
                 self._health += HEALTH_TAIL
             else:
@@ -127,7 +140,7 @@ class Snake:
                 action), "viewSize": self._brain.viewRadius, "hasFood": (int(PointType.FOOD) in view)}
 
         self._move(action, getPointType, setPoint)
-        if len(self._body) >= TAIL_MAX_LENTH:
+        if len(self._body) >= TAIL_MAX_LENGTH:
             self._giveBirth(setPoint, addSnakeToField)
 
     def _move(self, action: MoveDirection, getPointType, setPoint):
@@ -144,11 +157,11 @@ class Snake:
             i = 0
 
         if i != 0:
-            self._headView = Direction((int(self._headView)+i) % 4)
+            self._headView = Direction((int(self._headView) + i) % 4)
 
         h = self.head
         m = Snake.mapDirectionArrows[self._headView]
-        new_head = (h[0]+m[0], h[1]+m[1])
+        new_head = (h[0] + m[0], h[1] + m[1])
 
         pt = getPointType(new_head)
         if (pt == PointType.WALL or pt == PointType.SNAKE or pt == PointType.SNAKE_HEAD):
@@ -162,29 +175,29 @@ class Snake:
         self._body = [new_head] + self._body
         for i, p in enumerate(self._body):
             setPoint(p, (PointType.SNAKE_HEAD if i ==
-                     0 else PointType.SNAKE), self.getColorByBodyId(i))
+                                                 0 else PointType.SNAKE), self.getColorByBodyId(i))
 
-    def getHeadView(self, getPointType, asPointType: bool = False, rotated:bool=True) -> np.array:
-        view = np.full((2*self._brain.viewRadius+1, 2 *
-                       self._brain.viewRadius+1), PointType.EMPTY if asPointType else 0)
+    def getHeadView(self, getPointType, asPointType: bool = False, rotated: bool = True) -> np.array:
+        view = np.full((2 * self._brain.viewRadius + 1, 2 *
+                        self._brain.viewRadius + 1), PointType.EMPTY if asPointType else 0)
         head = self.head
         viewRadius = self._brain.viewRadius
         for x in range(view.shape[1]):
             for y in range(view.shape[0]):
                 pt = getPointType((
-                    head[0]-viewRadius+x, head[1]-viewRadius+y))
+                    head[0] - viewRadius + x, head[1] - viewRadius + y))
                 view[x, y] = pt if asPointType else int(pt)
         if rotated and self._headView != Direction.UP:
             view = np.rot90(view, int(self._headView))
         return view
 
     def _giveBirth(self, setPoint, addSnakeToField):
-        if not self.alive or len(self._body) < TAIL_MAX_LENTH:
+        if not self.alive or len(self._body) < TAIL_MAX_LENGTH:
             return
 
         self._countGiveBirth += 1
-        body = self._body[-1:TAIL_MAX_LENTH//2-1:-1]
-        for i in range(TAIL_MAX_LENTH//2):
+        body = self._body[-1:TAIL_MAX_LENGTH // 2 - 1:-1]
+        for i in range(TAIL_MAX_LENGTH // 2):
             self._removeTail(setPoint)
         # addSnakeToField(
         #     Snake(body, self._brain, Direction.UP, self.color.darker(0.9)))
@@ -196,13 +209,11 @@ class Snake:
         info["viewRadius"] = self._brain._viewRadius
         info["mse"] = self._brain._mse
         info["totalAge"] = self._age
-        info["countEat"]= self._countEat
-        info["countStay"]= self._countStay
-        info["countGiveBirth"]= self._countGiveBirth
+        info["countEat"] = self._countEat
+        info["countStay"] = self._countStay
+        info["countGiveBirth"] = self._countGiveBirth
         if survived:
             info["countSurvived"] = 1
 
-        dbo=DbSnakeData()
+        dbo = DbSnakeData()
         dbo.saveNN(info)
-
-

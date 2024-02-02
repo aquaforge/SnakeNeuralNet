@@ -8,7 +8,8 @@ from Snake import Snake
 
 
 class FieldScene(object):
-    def __init__(self, field: Field, canvasBlockSize: int, root: Tk, canvasField: Canvas,  canvasHead: Canvas, snakeInfo: Text):
+    def __init__(self, field: Field, canvasBlockSize: int, root: Tk, canvasField: Canvas, canvasHead: Canvas,
+                 snakeInfo: Text):
         self._field = field
         self._canvasBlockSize = canvasBlockSize
         self._root = root
@@ -34,8 +35,8 @@ class FieldScene(object):
         self.setCaption()
 
     def _drawRect(self, canvasField: Canvas, p: tuple, blockSize: int, fillColor, outlineColor):
-        return canvasField.create_rectangle(p[0]*blockSize+1, p[1]*blockSize+1, (p[0]+1)*blockSize+1,
-                                            (p[1]+1)*blockSize+1, fill=fillColor, outline=outlineColor)
+        return canvasField.create_rectangle(p[0] * blockSize + 1, p[1] * blockSize + 1, (p[0] + 1) * blockSize + 1,
+                                            (p[1] + 1) * blockSize + 1, fill=fillColor, outline=outlineColor)
 
     def saveImage(self, name):
         img = Image.new(mode="RGB", size=(
@@ -47,7 +48,7 @@ class FieldScene(object):
         img.save(name)
 
     def drawAll(self):
-        if self._field.age % 50 !=0:
+        if self._field.age % 50 != 0:
             return
 
         if self._field.needRedraw:
@@ -72,8 +73,8 @@ class FieldScene(object):
             f"Field={self._field.width}x{self._field.height} Snakes={len(self._field.snakes)} Food={self._field.foodCount} Age={self._field.age}")
 
     def _pointToScreenRect(self, p) -> list:
-        return (p[0]*self._canvasBlockSize, p[1]*self._canvasBlockSize,
-                (p[0]+1)*self._canvasBlockSize, (p[1]+1)*self._canvasBlockSize)
+        return (p[0] * self._canvasBlockSize, p[1] * self._canvasBlockSize,
+                (p[0] + 1) * self._canvasBlockSize, (p[1] + 1) * self._canvasBlockSize)
 
     def _drawSnakeInfo(self):
         self._canvasHead.delete("all")
@@ -85,7 +86,7 @@ class FieldScene(object):
             return
 
         dt = {}
-        dt["type"] = type(snake._brain).__name__.replace("Brain","")
+        dt["type"] = type(snake._brain).__name__.replace("Brain", "")
         dt["radius"] = snake.viewRadius
         dt["head"] = snake.headViewDirection
         dt["len"] = snake.len
@@ -97,13 +98,14 @@ class FieldScene(object):
         self._snakeInfo.insert(1.0, s)
 
         head = snake.head
-        z = 2*snake.viewRadius+1
+        z = 2 * snake.viewRadius + 1
         colorEmpty = COLOR_EMPTY.toHTMLColor
-        blockSize = self._canvasHead.winfo_width()/z
+        blockSize = self._canvasHead.winfo_width() / z
         for i in range(z):
             for j in range(z):
                 self._drawRect(self._canvasHead, (i, j),
-                               blockSize, self._field.getPointColorHTML((i-snake.viewRadius+head[0],j-snake.viewRadius+head[1])), colorEmpty)
+                               blockSize, self._field.getPointColorHTML(
+                        (i - snake.viewRadius + head[0], j - snake.viewRadius + head[1])), colorEmpty)
 
         # view = snake.getHeadView(self._field.getPointType, asPointType=True, rotated=False)
         # colorEmpty = COLOR_EMPTY.toHTMLColor

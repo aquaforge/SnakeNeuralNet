@@ -29,7 +29,7 @@ if len(trainData) > 0:
     print(dtNow(), "data loaded")
     dbo = DbSnakeData()
     for i in range(200):
-        viewRadius, td = trainData[randint(1, len(trainData)-1)]
+        viewRadius, td = trainData[randint(1, len(trainData) - 1)]
         b = BrainSimpleNN.getNewTrainedBrain(viewRadius, td)
         if b._mse < 0.12:
             info = b._model.info()

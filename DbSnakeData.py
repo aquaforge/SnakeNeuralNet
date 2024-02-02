@@ -6,6 +6,7 @@ from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.sql import func
 from sqlalchemy.dialects.sqlite import insert
 
+
 # https://metanit.com/python/database/3.3.php
 
 # https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html
@@ -17,12 +18,12 @@ class Base(DeclarativeBase):
 
 class BrainAi(Base):
     __tablename__ = "BrainAi"
-    id = Column(Integer,  nullable=False, primary_key=True, autoincrement=True)
-    viewRadius = Column(Integer,  nullable=False, index=True)
-    config = Column(String,  nullable=False)
+    id = Column(Integer, nullable=False, primary_key=True, autoincrement=True)
+    viewRadius = Column(Integer, nullable=False, index=True)
+    config = Column(String, nullable=False)
     data = Column(String, nullable=False)
     mse = Column(Float, nullable=False)
-    totalAge = Column(Integer, nullable=False, default=0,  server_default="0")
+    totalAge = Column(Integer, nullable=False, default=0, server_default="0")
     countEat = Column(Integer, nullable=False, default=0,
                       server_default="0", index=True)
     countStay = Column(Integer, nullable=False,
@@ -32,16 +33,18 @@ class BrainAi(Base):
     countSurvived = Column(Integer, nullable=False, default=0,
                            server_default="0")
     countStart = Column(Integer, nullable=False, default=0,
-                           server_default="0")
+                        server_default="0")
 
     createdOn = Column(DateTime(), nullable=False,
-                       default=datetime.datetime.now,  server_default=func.now())
+                       default=datetime.datetime.now, server_default=func.now())
     updatedOn = Column(DateTime(), nullable=False,
-                       default=datetime.datetime.now, server_default=func.now(),  onupdate=datetime.datetime.now, server_onupdate=func.now())
+                       default=datetime.datetime.now, server_default=func.now(), onupdate=datetime.datetime.now,
+                       server_onupdate=func.now())
 
     __table_args__ = (
         UniqueConstraint(data),
     )
+
 
 # select.order_by(func.random())
 
@@ -86,14 +89,22 @@ class DbSnakeData():
     / test2_table.c.z))
 select([result_exp], from_obj=[test2_table], order_by="result")       
 
+UPDATE BrainAi SET 
+       totalAge = 0,
+       countEat = 0,
+       countStay = 0,
+       countGiveBirth = 0,
+       countSurvived = 0,
+       countStart = 0
+
 
     '''
 
     def getBestTop(self, countRecords: int = 500) -> list:
         with Session(autoflush=False, bind=self._engine) as db:
             # .where(BrainAi.viewRadius != 2 and BrainAi.mse <= 0.1)
-            records = db.query(BrainAi).filter(BrainAi.totalAge < 2000).order_by(
-                BrainAi.totalAge.asc()).limit(countRecords).all()
+            records = db.query(BrainAi).filter(BrainAi.countStart < 20).order_by(
+                BrainAi.countStart.asc()).limit(countRecords).all()
             if len(records) == 0:
                 records = db.query(BrainAi).order_by(
                     func.random()).limit(countRecords).all()
@@ -132,6 +143,5 @@ select([result_exp], from_obj=[test2_table], order_by="result")
                     record.countStart += info["countStart"]
                 else:
                     record.countStart += 1
-
 
                 db.commit()

@@ -3,6 +3,7 @@ import json
 import numpy as np
 import jsonpickle
 import jsonpickle.ext.numpy as jsonpickle_numpy
+
 jsonpickle_numpy.register_handlers()
 
 
@@ -88,10 +89,11 @@ class SimpleNN:
                 if layer.activationClass == None:
                     layer.activationClass = ActivationNone
                 w = np.random.random(
-                    size=(layer.nodesCount, layers[i-1].nodesCount))
+                    size=(layer.nodesCount, layers[i - 1].nodesCount))
                 b = np.random.random(size=(layer.nodesCount, 1))
             self._layers.append(LayerExtended(nodesCount=layer.nodesCount,
-                                              activationClass=layer.activationClass, useBias=layer.useBias, bias=b, weights=w))
+                                              activationClass=layer.activationClass, useBias=layer.useBias, bias=b,
+                                              weights=w))
 
     def predict(self, inputVector):
         inputVector = np.array(inputVector).reshape(
@@ -99,7 +101,7 @@ class SimpleNN:
         self._layers[0].val = inputVector
         self._layers[0].valActivated = inputVector
         for i in range(1, len(self._layers)):
-            val = self._layers[i-1].valActivated
+            val = self._layers[i - 1].valActivated
             val = np.dot(self._layers[i].weights, val)
             if self._layers[i].useBias:
                 val += self._layers[i].bias
@@ -107,8 +109,6 @@ class SimpleNN:
             self._layers[i].valActivated = self._layers[i].activationClass.activation(
                 val)
         return self._layers[-1].valActivated
-
-   
 
     def clearTemp(self):
         for i in range(1, len(self._layers)):
@@ -128,11 +128,11 @@ class SimpleNN:
         targetVector = np.array(targetVector).reshape(
             self._layers[-1].nodesCount, 1)
 
-        for i in range(len(self._layers)-1, 0, -1):
-            if i == len(self._layers)-1:
+        for i in range(len(self._layers) - 1, 0, -1):
+            if i == len(self._layers) - 1:
                 errors = targetVector - self.predict(inputVector)
             else:
-                errors = np.dot(self._layers[i+1].weights.T, errors)
+                errors = np.dot(self._layers[i + 1].weights.T, errors)
             gradients = self._layers[i].activationClass.derivative(
                 self._layers[i].valActivated)
             gradients *= errors
@@ -143,7 +143,7 @@ class SimpleNN:
             if self._layers[i].useBias:
                 self._layers[i].bias += self._layers[i].gradients
             a = self._layers[i].gradients
-            b = self._layers[i-1].valActivated.T
+            b = self._layers[i - 1].valActivated.T
             self._layers[i].weights += np.dot(a, b)
 
     def encode(self) -> dict:

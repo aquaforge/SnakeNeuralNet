@@ -19,7 +19,6 @@ print("x_train shape:", x_train.shape)
 print(x_train.shape[0], "train samples")
 print(x_test.shape[0], "test samples")
 
-
 # convert class vectors to binary class matrices
 y_train = keras.utils.to_categorical(y_train, num_classes)
 y_test = keras.utils.to_categorical(y_test, num_classes)
@@ -46,8 +45,6 @@ model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, validation_spl
 score = model.evaluate(x_test, y_test, verbose=0)
 print("Test loss:", score[0])
 print("Test accuracy:", score[1])
-
-
 
 # # https://issint.ru/2023/01/25/nejjroset-na-python-dlja-chajjnikov-prostojj-primer-za-5-minut/?ysclid=lrxj6pih5x335876630
 # # https://dzen.ru/a/X2c_BEwHzgYE4j-u

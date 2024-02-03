@@ -20,13 +20,13 @@ from DbTrainData import TrainData, DbTrainData
 
 # https://ru.hexlet.io/blog/posts/19-bibliotek-dlya-python?ysclid=lrus9b9ejh622626382
 
-FIELD_WIDTH = 102 * 2
-FIELD_HEIGHT = 57 * 2
-CANVAS_BLOCK_SIZE = 8  # 15
+FIELD_WIDTH = 102
+FIELD_HEIGHT = 57
+CANVAS_BLOCK_SIZE = 15
 
-# FIELD_WIDTH = 102
-# FIELD_HEIGHT = 57
-# CANVAS_BLOCK_SIZE = 15
+# FIELD_WIDTH = 102 * 2
+# FIELD_HEIGHT = 57 * 2
+# CANVAS_BLOCK_SIZE = 8  # 15
 
 
 SCREEN_WIDTH = 1800
